@@ -1,12 +1,21 @@
-# Reference Material
+# Sodales Talents Reference Material
 
-These files are NOT authoritative requirements for Sodales Talents.
+The authoritative product/system specification for this project is:
 
-The authoritative product specification is:
+`docs/sdd/05-talents.md`
 
-docs/sdd/05-talents.md
+Files under `references/` are inspiration or implementation-planning references only.
 
-The Academy design document is included only as an example of planning,
-documentation quality, architecture thinking, and implementation preparation.
+## Important authority rule
 
-If a reference conflicts with the Talents SDD, the Talents SDD wins.
+If any reference conflicts with the Sodales Talents SDD, the Talents SDD wins.
+
+The Academy frontend design document was supplied by a teammate only as an
+example of planning quality, architecture thinking, documentation structure,
+and implementation preparation.
+
+It is NOT a requirements document for Sodales Talents.
+
+The screenshots under `references/screenshots/` are visual inspiration only.
+They must not override Sodales brand rules, accessibility requirements,
+functionality, or product scope.
