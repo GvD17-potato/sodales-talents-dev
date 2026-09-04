@@ -125,6 +125,7 @@ Completed:
 - Revision 2 corrections requested.
 - **Step 11 / Revision 2 pre-implementation audit completed.**
 - **Revision 2 human review completed — APPROVED.**
+- **Step 12A — Domain Requirements Clarification ✅ COMPLETE** — human-approved.
 
 Revision 2 audit of record:
 
@@ -132,11 +133,14 @@ Revision 2 audit of record:
 
 Current phase:
 
-**Step 12 — Requirements Clarification**
+**Step 12B — UI / Brand / Motion Requirements Clarification**
+
+Step 12B is owned by Claude Sonnet.
 
 Remaining gates, in order:
 
-1. **Step 12 — requirements clarification** (current)
+1. **Step 12B — UI / Brand / Motion Requirements Clarification** (current;
+   Claude Sonnet)
 2. Visual / motion specification
 3. Architecture design
 4. Implementation plan
@@ -478,19 +482,19 @@ It is not being claimed as an explicit original Talents SDD requirement.
 
 ## Unresolved Decisions
 
-These still need to be resolved before final architecture/implementation.
+This section preserves every U-number for audit and history references.
 
-Eleven items were raised through Revision 2. **Three have since been closed by
-senior developer decisions** and are marked RESOLVED in place — they are kept
-here, not deleted or renumbered, so audit references U-1…U-11 in
-`docs/audits/pre-implementation-audit-r2.md` stay valid.
+Eleven items were raised through Revision 2. **Seven have since been closed by
+senior developer decisions or the human-approved Step 12A domain decisions**
+and are marked RESOLVED in place. They are not deleted or renumbered, so audit
+references U-1…U-11 in `docs/audits/pre-implementation-audit-r2.md` stay valid.
 
 | # | Item | Status |
 | --- | --- | --- |
-| 1 | Draft profile database representation | UNRESOLVED |
-| 2 | Definition of "material edit" | UNRESOLVED |
-| 3 | Hidden profile editing behavior | UNRESOLVED |
-| 4 | Inquiry direct-archive behavior | UNRESOLVED |
+| 1 | Draft profile database representation | **RESOLVED** — Step 12A |
+| 2 | Definition of "material edit" | **RESOLVED** — Step 12A |
+| 3 | Hidden profile editing behavior | **RESOLVED** — Step 12A |
+| 4 | Inquiry direct-archive behavior | **RESOLVED** — Step 12A |
 | 5 | Product lockup / sub-brand conflict | **RESOLVED** (naming) — construction is design work |
 | 6 | Hero image | UNRESOLVED |
 | 7 | Seed credential / deployment safety | UNRESOLVED |
@@ -499,7 +503,7 @@ here, not deleted or renumbered, so audit references U-1…U-11 in
 | 10 | `scripts/db-smoke.mjs` | **RESOLVED** (provisioning) — assertions deferred to Codex |
 | 11 | `NEON_AUTH_COOKIE_SECRET` | **RESOLVED** (provisioning) — no fallback strategy approved |
 
-The eight still marked UNRESOLVED remain **genuinely unresolved**. None has
+The four still marked UNRESOLVED remain **genuinely unresolved**. None has
 been answered by inference, precedent, industry convention, or agent proposal.
 Per `AGENTS.md`, do not invent a missing decision — state what is known, what is
 unknown, and what decision is required.
@@ -507,50 +511,41 @@ unknown, and what decision is required.
 Where a source contains partial evidence, that evidence is quoted below and the
 question is still left open.
 
-### 1. Draft profile database representation
+### 1. Draft profile database representation — RESOLVED
 
-Sign-up creates a draft profile before all publication fields are complete.
+`headline`, `bio`, `location`, and `category_id` are nullable regardless of
+status. Draft and hidden profiles may be incomplete; pending and approved
+profiles must pass server-side publication-completeness checks. Draft-save
+validation remains separate, failed completeness transitions preserve status,
+and portfolio links remain optional.
 
-Do not assume without evidence that:
+### 2. Definition of "material edit" — RESOLVED
 
-- headline
-- bio
-- location
-- category
+For approved profiles, changes to display name, headline, bio, location,
+category, slug, skill membership/content, or portfolio-link membership,
+destination, or label are material. Pure skill or portfolio-link reordering is
+non-material. Normalized no-op saves are non-material; any save containing a
+material change is material. A material approved save atomically persists the
+change and transitions `approved -> pending`.
 
-are all database NOT NULL values.
+### 3. Hidden profile editing — RESOLVED
 
-Need decision on:
+Every normal save keeps a hidden profile `hidden`, including incomplete,
+no-op, reorder-only, and material saves. Only explicit **Resubmit for review**
+may perform `hidden -> pending`, after server-side completeness validation. A
+failed resubmission remains `hidden`; `hidden -> draft` and automatic
+save-driven resubmission are not allowed.
 
-- nullable values
-- empty values
-- or another contract-defined representation
+### 4. Inquiry archive behavior — RESOLVED
 
-### 2. Definition of "material edit"
+Allowed transitions are `new -> read`, `read -> new`, `new -> archived`,
+`read -> archived`, and `archived -> read`. Direct `archived -> new` is not
+allowed; use `archived -> read -> new`. Restoration does not add previous-status
+storage, archive history, or another inquiry status.
 
-The SDD requires an approved profile to become pending after a material edit.
+The complete human-approved record for U-1 through U-4 is:
 
-Exactly which edits count as material remains undefined.
-
-Do not invent the definition.
-
-### 3. Hidden profile editing
-
-Need to determine the status behavior when:
-
-hidden profile
-→ talent edits
-→ has NOT yet explicitly selected Resubmit
-
-Do not invent a transition.
-
-### 4. Inquiry archive behavior
-
-Need to clarify whether:
-
-`new -> archived`
-
-is valid directly, or whether inquiry must first become `read`.
+`docs/decisions/step-12a-domain-decisions.md`
 
 ### 5. Product lockup / corporate sub-brand conflict — RESOLVED (naming), design work remains
 
@@ -803,8 +798,8 @@ Two sub-points agree across both sources and are safe regardless:
 
 ## Escalations to the Senior Developer
 
-These **may be resolved in parallel with Step 12** — they do not block
-requirements clarification.
+These **may be resolved in parallel with Step 12B** — they do not block the
+remaining requirements clarification.
 
 Still open with the senior developer:
 
@@ -824,12 +819,18 @@ Closed by senior decision after the Revision 2 update:
 - Classification C — display typeface resolved in favour of Manrope (Talents
   SDD governs)
 
-Product decisions (Unresolved 1–4) belong to Step 12 and are **not** escalated
-as brand or environment questions.
+Product decisions U-1 through U-4 were resolved and human-approved in Step 12A.
+See `docs/decisions/step-12a-domain-decisions.md`.
 
 ---
 
 ## Current Audit Status
+
+**Step 12A — Domain Requirements Clarification is COMPLETE and human-approved.**
+
+Decision record:
+
+`docs/decisions/step-12a-domain-decisions.md`
 
 **Step 11 / Revision 2 is COMPLETE and APPROVED.**
 
@@ -880,23 +881,13 @@ in §4c.
 
 ## Immediate Next Task
 
-**Step 12 — Requirements Clarification.**
+**Step 12B — UI / Brand / Motion Requirements Clarification.**
 
-Purpose: close the product-level unresolved decisions with evidence, not
-invention.
+Owner: **Claude Sonnet**.
 
-In scope for Step 12 — Unresolved 1–4:
-
-1. Draft profile database representation
-2. Definition of "material edit"
-3. Hidden profile editing behavior
-4. Inquiry direct-archive behavior
-
-Also confirm, where the source is silent, anything else Step 12 surfaces. Every
-answer must be recorded in this file before it is treated as decided.
-
-Running in parallel (escalated, not blocking): Unresolved 5, 6, 7, 9, 10, 11
-and Classification C. See Escalations above.
+Step 12A domain decisions U-1 through U-4 are complete and recorded in
+`docs/decisions/step-12a-domain-decisions.md`. The still-open non-domain items
+remain as recorded above and are not changed by the Step 12A decision record.
 
 Do NOT:
 
