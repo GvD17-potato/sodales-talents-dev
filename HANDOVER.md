@@ -150,6 +150,53 @@ reached.
 
 ## Confirmed Senior Developer Decisions
 
+### Post-Revision-2 senior decisions
+
+Received after the Revision 2 handover update. These are CONFIRMED SENIOR
+DECISIONS and close three previously open items.
+
+**1. `scripts/db-smoke.mjs` — this repository creates it.**
+
+The senior developer confirmed the Talents smoke script is to be created here,
+not supplied from elsewhere. Closes Unresolved 10.
+
+The exact assertions are **not** decided. They are to be designed by Codex from
+the Talents SDD acceptance criteria (§14, §15) and approved during
+architecture / implementation planning. Do not invent them before that gate.
+
+**2. `NEON_AUTH_COOKIE_SECRET` — this project is authorised to create and
+configure a secure value.**
+
+The senior developer **authorised this project / the developer** to create and
+configure a secure `NEON_AUTH_COOKIE_SECRET`. Responsibility for doing so sits
+with this project, not with the senior developer. Closes Unresolved 11.
+
+It is a **required secure environment value** for this project. The actual
+secret must never be committed, logged, printed, or placed in documentation.
+
+No production fallback strategy was approved. The senior confirmed provisioning
+only; whether the code should fail closed rather than fall back outside
+development was not addressed and must not be presented as decided.
+
+**3. Talents brand lockup and display typography — follow the Talents SDD
+exactly.**
+
+The senior developer confirmed:
+
+- The product lockup is **`SODALES | TALENTS`** — pipe, per SDD §10 and §14.
+- **Manrope** is the Talents display typeface.
+- Inter remains body / UI, as the SDD requires.
+
+The brand deck does **not** override the senior-approved Talents SDD. The
+slash-based corporate sub-brand system (brand PDF pp.10–15, 21) and the deck's
+Inter / Neue Haas Grotesk display designation (p.17) are recorded as context in
+the Revision 2 audit, not as governing requirements for Talents.
+
+Still open, but as **design work rather than an unresolved requirement**: there
+is no supplied pre-made `SODALES | TALENTS` asset, so the exact visual and
+component construction from the available official Sodales assets is a UI
+implementation/design decision. See Unresolved 5.
+
 ### Repository / monorepo
 
 There is NO existing Sodales monorepo or starter repository.
@@ -209,9 +256,12 @@ A temporary layout placeholder may be used only when explicitly documented as a
 placeholder (`CLAUDE.md`). Final acceptance cannot be claimed without the asset
 or an approved change to the requirement.
 
-The exact construction of the required `SODALES | TALENTS` lockup remains an
-unresolved design decision — and Revision 2 found it conflicts with the
-corporate sub-brand system. See Unresolved 5.
+The lockup **naming is settled**: `SODALES | TALENTS`, confirmed by the senior
+developer per the Talents SDD.
+
+No pre-made asset for it has been supplied, so its exact visual construction
+from the available official assets remains a UI design decision, to be approved
+at the visual/motion specification gate. See Unresolved 5.
 
 ---
 
@@ -355,9 +405,10 @@ Typography from the SDD:
 - Manrope — display / expressive headings / large numerals
 - Inter — body / UI / forms / tables / controls
 
-See **Human Review Classifications — C** below. Manrope/Inter is the working
-requirement. A corporate-brand typography conflict exists and is awaiting
-senior sign-off; it does not block Step 12.
+**Confirmed by the senior developer** after the Revision 2 update: follow the
+Talents SDD exactly. Manrope is the Talents display typeface; Inter is
+preserved for body/UI. The corporate-brand typography conflict is closed in
+favour of the SDD. See **Human Review Classifications — C** below.
 
 ### Design-system authority split (Revision 2)
 
@@ -429,10 +480,29 @@ It is not being claimed as an explicit original Talents SDD requirement.
 
 These still need to be resolved before final architecture/implementation.
 
-All eleven survived the Revision 2 human review and remain **genuinely
-unresolved**. None has been answered by inference, precedent, industry
-convention, or agent proposal. Per `AGENTS.md`, do not invent a missing
-decision — state what is known, what is unknown, and what decision is required.
+Eleven items were raised through Revision 2. **Three have since been closed by
+senior developer decisions** and are marked RESOLVED in place — they are kept
+here, not deleted or renumbered, so audit references U-1…U-11 in
+`docs/audits/pre-implementation-audit-r2.md` stay valid.
+
+| # | Item | Status |
+| --- | --- | --- |
+| 1 | Draft profile database representation | UNRESOLVED |
+| 2 | Definition of "material edit" | UNRESOLVED |
+| 3 | Hidden profile editing behavior | UNRESOLVED |
+| 4 | Inquiry direct-archive behavior | UNRESOLVED |
+| 5 | Product lockup / sub-brand conflict | **RESOLVED** (naming) — construction is design work |
+| 6 | Hero image | UNRESOLVED |
+| 7 | Seed credential / deployment safety | UNRESOLVED |
+| 8 | Auth middleware behavior | UNRESOLVED — verify empirically |
+| 9 | Standalone execution / environment contract | UNRESOLVED |
+| 10 | `scripts/db-smoke.mjs` | **RESOLVED** (provisioning) — assertions deferred to Codex |
+| 11 | `NEON_AUTH_COOKIE_SECRET` | **RESOLVED** (provisioning) — no fallback strategy approved |
+
+The eight still marked UNRESOLVED remain **genuinely unresolved**. None has
+been answered by inference, precedent, industry convention, or agent proposal.
+Per `AGENTS.md`, do not invent a missing decision — state what is known, what is
+unknown, and what decision is required.
 
 Where a source contains partial evidence, that evidence is quoted below and the
 question is still left open.
@@ -482,36 +552,62 @@ Need to clarify whether:
 
 is valid directly, or whether inquiry must first become `read`.
 
-### 5. Product lockup / corporate sub-brand conflict
+### 5. Product lockup / corporate sub-brand conflict — RESOLVED (naming), design work remains
 
-There is no official `SODALES | TALENTS` lockup asset.
+**Status: the naming and separator decision is RESOLVED.**
 
-Revision 2 read the brand PDF page by page and found this is larger than a
-missing asset. The brand guidelines define an **official sub-brand system**:
+CONFIRMED SENIOR DECISION: follow the Talents SDD exactly — the lockup is
+**`SODALES | TALENTS`**. The corporate sub-brand conflict below is closed in
+favour of the SDD; the brand deck does not override it.
+
+Resolved sub-points:
+
+- **(a) Separator — RESOLVED.** Pipe, per SDD §10 and §14. Explicitly confirmed
+  by the senior developer.
+- **(b) Division status — RESOLVED.** The brand deck naming only five divisions
+  does not block Talents. Follows from the senior directive that the Talents
+  SDD governs.
+- **(c) Division colour — RESOLVED.** Electric Violet `#5E4FB3`, per SDD §10
+  ("the Talents division signal use Electric Violet"). Follows from the same
+  directive rather than a separate statement.
+
+**What remains open is design work, not an unresolved requirement.**
+
+There is still no supplied pre-made `SODALES | TALENTS` asset. The exact visual
+and component construction — how the official standalone symbol and official
+horizontal wordmark are composed with the `TALENTS` half, and how that half is
+set — is a UI implementation/design decision owned by Claude per `CLAUDE.md`,
+to be approved at the visual/motion specification gate.
+
+Constraint that still applies: SDD §14 forbids **approximating** a geometric
+icon. Using the official asset is compliant; drawing a lookalike is not. Do not
+present generated artwork as an official supplied Sodales asset.
+
+---
+
+Context retained below for the design work. It is **not** a live conflict.
+
+Revision 2 read the brand PDF page by page. The brand guidelines define an
+**official sub-brand system**:
 
 - Page 10 names **five divisions**: `/ STUDIO`, `/ CINEMA`, `/ PERSONA`,
   `/ LABS`, `/ ACADEMY`.
 - Construction is the wordmark with the division set **below it**, left-aligned,
   as `/ NAME` in bold italic, in a division-specific colour (pp.10–15).
 - Page 21 shows division **websites** using `[icon] SODALES / LABS` and
-  `SODALES / CINEMA` in the site header — the exact surface the SDD specifies.
+  `SODALES / CINEMA` in the site header.
 
-Three linked decisions are therefore open:
+That system is how other Sodales divisions are marked. Talents does not follow
+it: sub-points (a), (b) and (c) above are closed in favour of the Talents SDD
+by the senior decision. The deck is useful here only as a guide to how the
+official assets are composed and spaced.
 
-- **(a) Separator** — the SDD's `|` or the brand system's `/`.
-- **(b) Division status** — Talents is not one of the five named divisions, so
-  no approved Talents division mark exists.
-- **(c) Division colour** — SDD §10 assigns Electric Violet as the Talents
-  division signal; the nearest official division colour (STUDIO's) is a related
-  violet. Whether Talents may take Electric Violet is a brand call.
+Available official assets for the design work: the standalone symbol and the
+horizontal icon + wordmark lockup both exist (brand pp.5, 6, 9), including
+reversed and single-colour variants (p.8).
 
-What is NOT blocked: the official standalone symbol and the official horizontal
-icon + wordmark lockup both exist (brand pp.5, 6, 9), including reversed and
-single-colour variants (p.8). SDD §14 forbids **approximating** a geometric
-icon; using the official asset is compliant.
-
-The Academy `SODALES | ACADEMY` precedent is reference-only and cannot settle
-this.
+The Academy `SODALES | ACADEMY` precedent remains reference-only and did not
+settle this — the senior decision did.
 
 ### 6. Hero image
 
@@ -572,30 +668,47 @@ Decisions needed:
 
 Escalated to the senior developer. May be resolved in parallel with Step 12.
 
-### 10. `scripts/db-smoke.mjs` definition
+### 10. `scripts/db-smoke.mjs` definition — RESOLVED (provisioning)
 
-`node scripts/db-smoke.mjs talents` is an acceptance criterion (SDD §14, §15)
-but the script does not exist, no reference copy is available, and nothing
-defines what it must assert for Talents.
+**Status: provisioning is RESOLVED.**
 
-Decision needed: supply the shared script, or define the Talents assertions.
+CONFIRMED SENIOR DECISION: this repository creates `scripts/db-smoke.mjs`. It
+is not waiting on a shared script from elsewhere.
 
-### 11. `NEON_AUTH_COOKIE_SECRET` provisioning
+Original question: `node scripts/db-smoke.mjs talents` is an acceptance
+criterion (SDD §14, §15) but the script does not exist and no reference copy is
+available.
 
-Neon contract §3a signs session cookies with
-`process.env.NEON_AUTH_COOKIE_SECRET ?? "dev-insecure-secret-32-chars-min!!"`.
+Remaining work, deliberately not decided here: the exact assertions are to be
+designed by **Codex** from the Talents SDD acceptance criteria and approved
+during architecture / implementation planning.
 
-That variable is absent from the contract's §2 `.env.local` inventory and from
-SDD §16's Vercel environment list.
+Do not invent the assertions in documentation, and do not treat them as settled
+before that gate.
 
-If it is unset in production, every session cookie is signed with a secret
-published in this repository.
+### 11. `NEON_AUTH_COOKIE_SECRET` provisioning — RESOLVED (provisioning)
 
-Decision needed: confirm the variable is set in Vercel, and whether the code
-should fail closed rather than fall back outside development.
+**Status: secret provisioning is RESOLVED.**
 
-Escalated to the senior developer. Security item — must close before any
-production deploy.
+CONFIRMED SENIOR DECISION: the senior developer **authorised this project / the
+developer** to create and configure a secure `NEON_AUTH_COOKIE_SECRET`.
+Creating and configuring it is this project's responsibility.
+
+`NEON_AUTH_COOKIE_SECRET` is a **required secure environment value** for this
+project. The actual secret must never be committed, logged, printed, or placed
+in documentation — consistent with the Neon contract §1 hard rule on
+`.env.local` values.
+
+Original question: Neon contract §3a signs session cookies with
+`process.env.NEON_AUTH_COOKIE_SECRET ?? "dev-insecure-secret-32-chars-min!!"`,
+and the variable is absent from the contract's §2 `.env.local` inventory and
+from SDD §16's Vercel environment list. If unset in production, every session
+cookie would be signed with a secret published in this repository.
+
+**Not decided:** whether the code should fail closed rather than fall back to
+the documented default outside development. The senior confirmed provisioning
+only. No production fallback strategy has been approved — do not record or
+implement one as though it had been.
 
 ---
 
@@ -663,10 +776,9 @@ The pooled/unpooled concern raised in Revision 2 is a **technical observation,
 not an approved architecture change**. Do not switch to
 `DATABASE_URL_UNPOOLED` unilaterally.
 
-### C. Typography
+### C. Typography — SENIOR SIGN-OFF RECEIVED
 
-**Working requirement: Manrope for Talents display typography, Inter for
-UI/body.**
+**Requirement: Manrope for Talents display typography, Inter for UI/body.**
 
 The Talents SDD is authoritative (SDD §10).
 
@@ -674,8 +786,13 @@ The corporate-brand conflict is real and recorded: brand PDF p.17 designates
 Inter / Neue Haas Grotesk as the display typeface, with Akzidenz-Grotesk as the
 alternative; Manrope appears nowhere in the deck.
 
-That conflict is **awaiting senior sign-off but does not block Step 12**.
-Proceed on Manrope/Inter.
+**Resolved.** The senior developer confirmed after the Revision 2 update:
+follow the Talents SDD exactly — Manrope for Talents display typography, Inter
+preserved for body/UI. The brand deck does not override the senior-approved
+Talents SDD.
+
+This is no longer a working assumption awaiting sign-off. See Post-Revision-2
+senior decisions above.
 
 Two sub-points agree across both sources and are safe regardless:
 
@@ -686,21 +803,26 @@ Two sub-points agree across both sources and are safe regardless:
 
 ## Escalations to the Senior Developer
 
-Open with the project senior developer. These **may be resolved in parallel
-with Step 12** — they do not block requirements clarification.
+These **may be resolved in parallel with Step 12** — they do not block
+requirements clarification.
 
-Environment / infrastructure:
+Still open with the senior developer:
 
 - Unresolved 9 — standalone execution / environment contract
-- Unresolved 10 — `scripts/db-smoke.mjs` definition
-- Unresolved 11 — `NEON_AUTH_COOKIE_SECRET` provisioning
 - Unresolved 7 — seed credential / deployment safety
-
-Brand:
-
-- Unresolved 5 — `SODALES | TALENTS` lockup and corporate sub-brand conflict
 - Unresolved 6 — missing `talents-studio-hero.png`
-- Human Review Classification C — display typeface conflict
+
+Closed by senior decision after the Revision 2 update:
+
+- Unresolved 10 — `scripts/db-smoke.mjs` — this repo creates it; assertions
+  deferred to Codex at the architecture / implementation planning gate
+- Unresolved 11 — `NEON_AUTH_COOKIE_SECRET` — this project is authorised and
+  responsible for creating/configuring a secure value; no fallback strategy
+  approved
+- Unresolved 5 — lockup naming resolved to `SODALES | TALENTS`; visual
+  construction is now design work, not an escalation
+- Classification C — display typeface resolved in favour of Manrope (Talents
+  SDD governs)
 
 Product decisions (Unresolved 1–4) belong to Step 12 and are **not** escalated
 as brand or environment questions.
