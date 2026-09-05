@@ -28,6 +28,24 @@ const entranceBootstrap = `(() => {
   }
 
   root.setAttribute("data-sodales-entrance", mode);
+
+  // The Brand Aperture look-through effect needs an inverse CSS mask
+  // (mask-composite/-webkit-mask-composite) to cut a symbol-shaped hole. This
+  // is checked unconditionally (not just on first pageview) because the same
+  // mask technique also drives the top-level route-transition overlay on
+  // every navigation. Where unsupported, both fall back to the previously
+  // shipped scale/opacity treatment rather than showing a broken mask.
+  let apertureSupported = false;
+  try {
+    const supportsCss = typeof window !== "undefined" && "CSS" in window && typeof CSS.supports === "function";
+    apertureSupported =
+      supportsCss &&
+      (CSS.supports("mask-composite", "exclude") || CSS.supports("-webkit-mask-composite", "xor")) &&
+      (CSS.supports("mask-image", "url(a.png)") || CSS.supports("-webkit-mask-image", "url(a.png)"));
+  } catch {
+    apertureSupported = false;
+  }
+  root.setAttribute("data-sodales-aperture", apertureSupported ? "on" : "off");
 })();`;
 
 const inter = Inter({

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   createContext,
+  type CSSProperties,
   type MouseEvent,
   type ReactNode,
   useCallback,
@@ -16,6 +17,17 @@ import {
 const TOP_LEVEL_ROUTES = new Set(["/", "/talents", "/login", "/sign-up"]);
 type EntranceMode = "standard" | "reduced";
 
+const ENTRANCE_SYMBOL_SIZE_MOBILE = 112;
+const ENTRANCE_SYMBOL_SIZE_DESKTOP = 136;
+const ROUTE_SYMBOL_SIZE = 76;
+const APERTURE_MARGIN = 1.2;
+const APERTURE_MIN_SCALE = 4;
+
+const ENTRANCE_TIMEOUT_MS = 1600; // covers both the 1.45s aperture and 1.55s fallback path, onAnimationEnd normally fires first
+const REDUCED_TIMEOUT_MS = 700;
+const ROUTE_NAVIGATE_DELAY_MS = 150;
+const ROUTE_TOTAL_MS = 650;
+
 type NavigationContextValue = {
   navigate: (href: string) => void;
   reducedMotion: boolean;
@@ -23,13 +35,24 @@ type NavigationContextValue = {
 
 const NavigationContext = createContext<NavigationContextValue | null>(null);
 
+function computeApertureScale(baseSizePx: number) {
+  if (typeof window === "undefined") return APERTURE_MIN_SCALE;
+  const diagonal = Math.hypot(window.innerWidth, window.innerHeight);
+  return Math.max(APERTURE_MIN_SCALE, (diagonal * APERTURE_MARGIN) / baseSizePx);
+}
+
 export function TransitionShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const navigationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const routeCompleteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [entranceMounted, setEntranceMounted] = useState(true);
   const [entranceMode, setEntranceMode] = useState<EntranceMode | null>(null);
+  const [apertureSupported, setApertureSupported] = useState(false);
+  const [entranceScale, setEntranceScale] = useState(APERTURE_MIN_SCALE);
   const [routeActive, setRouteActive] = useState(false);
+  const [routeScale, setRouteScale] = useState(APERTURE_MIN_SCALE);
+  const [routeKey, setRouteKey] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
 
   const completeEntrance = useCallback(() => {
@@ -53,8 +76,19 @@ export function TransitionShell({ children }: { children: ReactNode }) {
     const mode = document.documentElement.getAttribute(
       "data-sodales-entrance",
     );
+    setApertureSupported(
+      document.documentElement.getAttribute("data-sodales-aperture") === "on",
+    );
+
     if (mode === "standard" || mode === "reduced") {
       setEntranceMode(mode);
+      if (mode === "standard") {
+        const baseSize =
+          window.innerWidth >= 768
+            ? ENTRANCE_SYMBOL_SIZE_DESKTOP
+            : ENTRANCE_SYMBOL_SIZE_MOBILE;
+        setEntranceScale(computeApertureScale(baseSize));
+      }
       return;
     }
 
@@ -65,7 +99,7 @@ export function TransitionShell({ children }: { children: ReactNode }) {
     if (!entranceMode) return;
     const timeout = window.setTimeout(
       completeEntrance,
-      entranceMode === "reduced" ? 700 : 1900,
+      entranceMode === "reduced" ? REDUCED_TIMEOUT_MS : ENTRANCE_TIMEOUT_MS,
     );
     return () => window.clearTimeout(timeout);
   }, [completeEntrance, entranceMode]);
@@ -79,15 +113,10 @@ export function TransitionShell({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("keydown", dismiss);
   }, [completeEntrance, entranceMode]);
 
-  useEffect(() => {
-    if (!routeActive) return;
-    const timeout = window.setTimeout(() => setRouteActive(false), 260);
-    return () => window.clearTimeout(timeout);
-  }, [pathname, routeActive]);
-
   useEffect(
     () => () => {
       if (navigationTimer.current) clearTimeout(navigationTimer.current);
+      if (routeCompleteTimer.current) clearTimeout(routeCompleteTimer.current);
     },
     [],
   );
@@ -105,27 +134,68 @@ export function TransitionShell({ children }: { children: ReactNode }) {
       }
 
       if (navigationTimer.current) clearTimeout(navigationTimer.current);
+      if (routeCompleteTimer.current) clearTimeout(routeCompleteTimer.current);
+
+      // A fresh key forces React to remount the overlay, guaranteeing its CSS
+      // animation restarts from frame zero even if a previous top-level
+      // transition was still mid-flight — this is what makes "latest
+      // navigation wins" actually replay cleanly instead of resuming a
+      // stale, already-progressed animation.
+      setRouteKey((key) => key + 1);
+      setRouteScale(computeApertureScale(ROUTE_SYMBOL_SIZE));
       setRouteActive(true);
-      navigationTimer.current = setTimeout(() => router.push(href), 190);
+
+      navigationTimer.current = setTimeout(
+        () => router.push(href),
+        ROUTE_NAVIGATE_DELAY_MS,
+      );
+      routeCompleteTimer.current = setTimeout(
+        () => setRouteActive(false),
+        ROUTE_TOTAL_MS,
+      );
     },
     [pathname, reducedMotion, router],
   );
 
+  const entranceAnimationEnd = (event: React.AnimationEvent<HTMLButtonElement>) => {
+    if (event.currentTarget === event.target) completeEntrance();
+  };
+
   return (
     <NavigationContext.Provider value={{ navigate, reducedMotion }}>
+      {entranceMounted ? (
+        // Rendered unconditionally (not gated on `entranceMode`, which only
+        // resolves post-hydration) so this element already exists in the DOM
+        // at first paint. Visibility is decided entirely by the
+        // `data-sodales-entrance`/`data-sodales-aperture` attributes on
+        // `<html>`, which the pre-hydration bootstrap script resolves before
+        // the browser paints anything — the same mechanism that prevents the
+        // homepage flash. If mode isn't "standard" or aperture isn't
+        // supported, CSS keeps this permanently display:none.
+        <button
+          type="button"
+          aria-label="Dismiss introduction"
+          onAnimationEnd={entranceAnimationEnd}
+          onClick={completeEntrance}
+          className="brand-aperture"
+          style={{ "--aperture-scale-end": entranceScale } as CSSProperties}
+        >
+          <span className="brand-aperture__hole" aria-hidden="true" />
+          <span className="brand-aperture__plug" aria-hidden="true" />
+        </button>
+      ) : null}
+
       {entranceMounted ? (
         <button
           type="button"
           aria-label="Dismiss introduction"
-          onAnimationEnd={(event) => {
-            if (event.currentTarget === event.target) completeEntrance();
-          }}
+          onAnimationEnd={entranceAnimationEnd}
           onClick={completeEntrance}
           className="brand-entrance"
         >
           <span className="brand-entrance__asset" aria-hidden="true">
             <Image
-              src="/media/sodales-symbol.png"
+              src="/media/sodales-symbol-transparent.png"
               alt=""
               width={203}
               height={203}
@@ -137,19 +207,31 @@ export function TransitionShell({ children }: { children: ReactNode }) {
 
       {children}
 
-      <div
-        aria-hidden="true"
-        className={`route-transition ${routeActive ? "route-transition--active" : ""}`}
-      >
-        <span className="route-transition__asset">
-          <Image
-            src="/media/sodales-symbol.png"
-            alt=""
-            width={203}
-            height={203}
-          />
-        </span>
-      </div>
+      {apertureSupported ? (
+        <div
+          key={routeKey}
+          aria-hidden="true"
+          className={`route-aperture ${routeActive ? "route-aperture--active" : ""}`}
+          style={{ "--aperture-route-scale-end": routeScale } as CSSProperties}
+        >
+          <span className="route-aperture__hole" />
+          <span className="route-aperture__plug" />
+        </div>
+      ) : (
+        <div
+          aria-hidden="true"
+          className={`route-transition ${routeActive ? "route-transition--active" : ""}`}
+        >
+          <span className="route-transition__asset">
+            <Image
+              src="/media/sodales-symbol-transparent.png"
+              alt=""
+              width={203}
+              height={203}
+            />
+          </span>
+        </div>
+      )}
     </NavigationContext.Provider>
   );
 }

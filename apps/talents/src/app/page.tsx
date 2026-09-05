@@ -60,9 +60,9 @@ export default async function HomePage() {
               <span>Creative intelligence</span>
             </div>
             <div className="absolute inset-0 grid place-items-center px-10 pt-12">
-              <div className="grid aspect-square w-[46%] max-w-[230px] place-items-center bg-white p-4 sm:p-6">
+              <div className="grid aspect-square w-[46%] max-w-[230px] place-items-center">
                 <Image
-                  src="/media/sodales-symbol.png"
+                  src="/media/sodales-symbol-transparent.png"
                   alt=""
                   aria-hidden="true"
                   width={203}

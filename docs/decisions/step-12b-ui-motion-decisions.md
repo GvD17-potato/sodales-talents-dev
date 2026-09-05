@@ -9,6 +9,19 @@ under deadline mode rather than the one-at-a-time interview format used for
 Decisions 1–6, then approved together with one wording correction to Decision
 7 (Inquiry Dialog).
 
+**Revision note (post-milestone):** Decisions 3 and 4's visual mechanism were
+subsequently revised by explicit product direction from "symbol scales →
+disappears → destination appears" to the **Sodales Brand Aperture**
+concept — the symbol's own silhouette used as a look-through mask/aperture
+into the already-rendered destination, with heavy overlap between symbol
+scale, violet-fill fade, destination reveal, and Obsidian recession. This
+revision explicitly **supersedes** the original Decision 3 language "a
+'curtain pull,' not a precise clip-path/mask of the symbol's own geometry."
+Cadence, timing ranges, skip/interruption behaviour, and route-transition
+scope rules are unchanged. The revision introduces one new, unresolved
+implementation blocker — see each revised decision's "Implementation
+constraints" and "Remaining UI / Motion Blockers" below.
+
 Owned by Claude Sonnet (UI/UX and motion design intent) per `CLAUDE.md`.
 Production animation code, dialog implementation, and technique choices remain
 Codex's to implement per `AGENTS.md`.
@@ -133,27 +146,58 @@ fixed (addressed in Decision 8); real asset delivery date remains unknown
 
 ---
 
-## Decision 3 — First-Load Branded Entrance
+## Decision 3 — First-Load Branded Entrance ("Sodales Brand Aperture")
 
 **Final decision:**
 
-*Cadence:* runs at most once per browser session, and only when the first
-pageview of that session is `/`. A first pageview that is a deep link (e.g.
-`/talents/[slug]`, `/login`, `/dashboard`, `/admin`) never shows it. Internal
-navigation never replays it. Refreshing `/` later in the same session does
-not replay it.
+*Cadence:* unchanged — runs at most once per browser session, and only when
+the first pageview of that session is `/`. A first pageview that is a deep
+link (e.g. `/talents/[slug]`, `/login`, `/dashboard`, `/admin`) never shows
+it. Internal navigation never replays it. Refreshing `/` later in the same
+session does not replay it.
 
-*Visual sequence:* Obsidian full-screen field → official Sodales symbol
-appears centered → brief composed hold → the symbol enlarges beyond its
-initial scale while the Obsidian layer recedes/clears (a "curtain pull," not
-a precise clip-path/mask of the symbol's own geometry) → the Soft Ivory
-homepage is revealed underneath → the large-symbol moment hands off visually
-to the normal `SODALES | TALENTS` header lockup. No redraw or distortion of
-the symbol.
+*Visual concept — Brand Aperture:* the official Sodales symbol's own
+silhouette becomes a look-through aperture into the destination page, which
+is already rendered underneath the entrance from the start (not mounted
+late). The feeling is "moving through the brand mark into the product," not
+"a logo plays, then the page appears." **This explicitly supersedes** the
+original Decision 3 wording that ruled out using the symbol as "a precise
+clip-path/mask of the symbol's own geometry" — that restriction no longer
+applies; the symbol's true, unaltered geometry is now the mask.
 
-*Duration:* target approximately 1.0–1.6 seconds total — design intent, not a
+Target sub-phase timing (design intent, not frame-exact; Codex tunes exact
+values during browser review):
+
+| Window | Behaviour |
+| --- | --- |
+| 0–180ms | Obsidian field already present (must cover first paint — no homepage flash) |
+| 120–350ms | Violet-filled symbol resolves at center |
+| 350–550ms | Brief composed hold |
+| 500–750ms | Destination begins becoming visible through the symbol's exact silhouette |
+| 650–1250ms | Symbol undergoes a strong, smooth scale toward the viewer; the violet fill's opacity is *independently* reduced across this same window, so the destination reads more clearly through the aperture as it enlarges |
+| 900–1350ms | Surrounding Obsidian field simultaneously fades/recedes |
+| 1250–1450ms | Symbol passes beyond the viewport edges; violet fill is fully gone; destination reaches full clarity |
+
+*Overlap principle (critical):* symbol scale, violet-fill fade, destination
+reveal, and Obsidian recession must overlap substantially — the destination
+must never wait for the symbol animation to "finish" before it starts
+becoming visible. A sequence that reads as "logo finishes → overlay
+disappears → page suddenly appears" is explicitly the wrong result.
+
+*Geometry constraint (unchanged from the original decision):* no redraw, no
+approximation, no distortion of the symbol. The mask must use the symbol's
+real geometry, not a shape derived, traced, or regenerated from it.
+
+*Duration:* the sub-phase table above targets ~1.45s total, consistent with
+the original approximately 1.0–1.6 second range — design intent, not a
 frame-exact requirement; Codex may tune during browser review while
-preserving the approved feel and maximum-restraint principle.
+preserving the overlap principle and maximum-restraint principle.
+
+*Design goal:* cinematic, editorial, fluid, premium, brand-specific. Explicitly
+**not**: a loader, a spinner, a gaming-style transition, a "Marvel-style"
+theatrical intro, a glitch effect, or a flashy tech demo. The Sodales
+identity itself is the transition language — no generic transition effect
+should be recognizable independent of the brand mark.
 
 *Progress:* no percentage, no counter, no progress bar, no fake measured
 loading state. The entrance is decorative brand motion, not a loading screen;
@@ -171,49 +215,91 @@ behaviour.
 
 **What must NOT happen:** no Lusion percentage-counter imitation, no
 digit-flip imitation, no diagonal-panel-wipe imitation, no WebGL/3D brand
-scene, no heavy theatrical sequence, no replay on normal navigation/filters/
-dialogs/saves/form actions/admin mutations, no artificial waiting for the
-animation's sake, no distortion/redrawing of the official symbol.
+scene, no heavy theatrical sequence, no loader/spinner language, no
+gaming-style transition, no glitch effect, no flashy-tech-demo feel, no
+replay on normal navigation/filters/dialogs/saves/form actions/admin
+mutations, no artificial waiting for the animation's sake, no distortion/
+redrawing/approximation of the official symbol's geometry.
 
-**Reason:** establishes a premium first impression exactly once, without
-becoming an obstacle to repeat visits or deep-linked entries, and without any
-dishonest fake-loading state.
+**Reason:** the original scale-and-disappear mechanic read as "a logo plays,
+then the page appears" — two discrete beats with a hard cut between them.
+The Brand Aperture concept replaces this with one continuous, overlapping
+gesture built from the identity mark itself, which reads as more cinematic,
+more premium, and more brand-specific, while preserving every previously
+approved restraint principle (once-per-session, home-only, no fake loading
+state, no theatrical excess).
 
 **Source basis:** the candidate first-load concept already recorded in
 `HANDOVER.md`/`CLAUDE.md` ("Obsidian → brand moment → symbol → symbol
-scales/reveals page → Soft Ivory homepage"). The broad restraint and
-non-replay principle is source/project-direction informed; the exact session
-cadence, home-only trigger, duration target, and the scale-and-recede reveal
-mechanic are approved project/design decisions, not explicit SDD
-requirements.
+becomes transition/reveal → Soft Ivory site") anticipated the symbol itself
+acting as the reveal mechanism; the specific Brand Aperture mask/look-through
+mechanism, its sub-phase timing, and the overlap principle are an approved
+PRODUCT DECISION refining that concept, not a new SDD requirement. The broad
+restraint and non-replay principle remains source/project-direction informed.
 
 **Design implications:** the entrance is the one deliberately theatrical
 moment in an otherwise restrained system; nothing else in Decisions 4–8
-matches its scale.
+matches its scale. The aperture concept must remain legible as the Sodales
+mark throughout — at no point should the shape read as an abstract loading
+graphic disconnected from the brand.
 
 **Responsive implications:** applies uniformly across breakpoints; mobile is
-biased toward the shorter end of the duration range (Decision 8).
+biased toward the shorter end of the duration range (Decision 8). On narrow
+viewports the symbol must remain large enough, before it begins scaling, to
+read clearly as the brand mark — the aperture concept fails if the mark is
+too small to recognize at the moment the look-through begins.
 
 **Accessibility / reduced-motion implications:** per Decision 5 — the
-Obsidian field, the symbol, and a brief brand presence are preserved; symbol
-scaling, the scale-and-recede movement, masks/clip-path reveals, parallax,
-translation, and staggered choreography are all removed; only a static
-composition with a restrained opacity transition remains; the reduced-motion
-version is also materially shorter in time, not just simplified in kind (no
-prolonged hold for theatrical effect); no exact millisecond value is
-hardcoded here. The once-per-session/home-first cadence is unchanged under
-reduced motion. Dismissal behaviour is identically available under both
-settings.
+aperture scale-through (mask expansion, independent violet-fade, and the
+overlapping destination reveal) is **not used** under `prefers-reduced-
+motion`. Instead: Obsidian field → static centered violet symbol → a short,
+opacity-only dissolve → destination. No mask expansion, no scale, no
+independent fill-fade choreography. The reduced-motion version is also
+materially shorter in time, not just simplified in kind (no prolonged hold
+for theatrical effect); no exact millisecond value is hardcoded here. The
+once-per-session/home-first cadence is unchanged under reduced motion.
+Dismissal behaviour is identically available under both settings.
 
-**Implementation constraints for Codex:** `sessionStorage`-based one-time flag
-scoped to "first pageview was `/`"; the entrance overlay must not block
-hydration/rendering of the real homepage behind it; dismiss handling must not
-consume clicks intended for underlying navigation; no CSS/Motion/GSAP
-technique is prescribed here — that choice belongs to Codex within the
-approved architecture.
+**Implementation constraints for Codex:**
+
+- `sessionStorage`-based one-time flag scoped to "first pageview was `/`" —
+  unchanged from the existing implementation; preserve it.
+- The destination page must already be mounted and rendered in its final
+  state beneath the entrance overlay from the first frame — the "look-through"
+  has nothing to reveal otherwise. This is consistent with, and reinforces,
+  the pre-hydration `data-sodales-entrance` attribute architecture already in
+  place (no post-paint mounting).
+- The violet fill must be an independently controllable layer, separate from
+  the mask shape itself, so its opacity can fade on its own timeline while the
+  mask continues to scale (e.g. a violet-filled copy of the symbol composited
+  above the destination, with the symbol's true alpha geometry as the mask/
+  clip source for the destination layer beneath it).
+- Prefer animating a `transform: scale()` on the masked container over
+  regenerating or resizing the mask asset itself, for performance.
+- **CRITICAL / UNRESOLVED — mask asset dependency:** this technique requires
+  the official Sodales symbol as a genuine alpha-channel source (SVG
+  preferred, or a PNG with a real transparent background matching the exact
+  official geometry). The currently committed asset
+  (`docs/brand/assets/sodales-symbol.png` and its app runtime copies) is an
+  **opaque PNG on a white background** — it has no alpha channel and cannot
+  function as a mask today. Earlier in this same milestone, an unauthorized
+  AI-generated "transparent" replacement was created, contained visible
+  geometry distortion and stray-pixel artifacts, and was reverted per the
+  standing brand-asset rule (no silently substituting generated artwork into
+  the official brand path). That rule still governs here: **do not generate a
+  new transparent asset to unblock this without an explicit human decision
+  and documented provenance.** See "Remaining UI / Motion Blockers" below —
+  this is a genuine implementation blocker, not a Codex-tunable detail.
+- No CSS/SVG/Motion/GSAP technique is otherwise prescribed — that choice
+  belongs to Codex within the approved architecture, once the mask-asset
+  dependency is resolved.
 
 **Remaining uncertainty:** exact millisecond timing for both the full-motion
-and reduced-motion versions is explicitly left to Codex/browser review.
+and reduced-motion versions is explicitly left to Codex/browser review; the
+mask-asset dependency above is unresolved and blocking, not a tuning detail;
+whether the look-through is best implemented via CSS `mask-image`/
+`clip-path` or an SVG `<mask>` element is an open technical question that
+should be spiked once an alpha-channel asset exists.
 
 ---
 
@@ -243,17 +329,27 @@ close (including the inquiry dialog), form saves, profile edits, admin
 approve/hide, inquiry triage, ordinary state changes, browser back/forward
 navigation, and routine talent profile drill-down as defined above.
 
-*Visual treatment:* a brief full-viewport Obsidian overlay; the official
-symbol centered, smaller than the Decision 3 entrance symbol; a restrained
-fade/hold/fade; no large scale-and-recede choreography; no counter, no
-progress bar, no loader language, no Lusion panel-wipe imitation; no symbol
-redraw or distortion. It must read as a brief brand punctuation mark, not
-another intro.
+*Visual treatment (revised — fast Brand Aperture):* the same Brand Aperture
+language as Decision 3, compressed and made significantly faster: a brief
+Obsidian takeover → a small violet symbol resolves at center (smaller than
+the Decision 3 entrance symbol) → the destination (already rendered
+underneath) becomes visible through the symbol's exact silhouette almost
+immediately → a fast scale-through while the violet fill fades and the
+Obsidian field clears, with the same overlap principle as Decision 3 (no
+discrete "logo finishes, then page appears" cut) → destination at full
+clarity. No counter, no progress bar, no loader language, no Lusion
+panel-wipe imitation, no symbol redraw/distortion/approximation. It must
+read as a brief brand punctuation mark, not another intro — the long
+composed hold from Decision 3 (350–550ms) is not replayed here.
 
-*Duration:* target approximately 0.4–0.7 seconds total — an approved design
+*Duration:* target approximately 550–750ms total — an approved design
 target, not an exact technical requirement; Codex may tune it during browser
 review with the goal that it remains clearly shorter and less theatrical than
-Decision 3.
+Decision 3. This uses the same layered technique as Decision 3 (violet fill
+as an independent, separately-fading layer over the destination revealed
+through the symbol's true geometry as mask), so it carries the same
+**mask-asset dependency** flagged in Decision 3's implementation constraints
+— it cannot be implemented before that dependency is resolved either.
 
 *Loading/data readiness:* the transition is independent from real loading. It
 must not be extended simply because destination data is slow; if the
@@ -319,8 +415,9 @@ setting is added for MVP.
 
 *Entrance (Decision 3):* preserve the Obsidian brand field, the official
 centered symbol, a brief brand presence, and the transition into the Soft
-Ivory homepage. Remove symbol scaling, the scale-and-recede movement, masks/
-clip-path reveals, parallax, translation, and staggered choreography. Use
+Ivory homepage. Remove symbol scaling, the Brand Aperture scale-through and
+its independent violet-fade, masks/clip-path look-through reveals, parallax,
+translation, and staggered choreography. Use
 only a static composition and a restrained opacity transition. Reduced motion
 also reduces time, not merely transforms — the reduced-motion entrance is
 materially shorter than the standard 1.0–1.6s entrance: a brief static brand
@@ -664,11 +761,30 @@ conflict.
 
 ## Remaining UI / Motion Blockers
 
-None for the testing milestone. Every open item above (contrast-safe violet
-on dark chrome, exact millisecond timings, the hero frame aspect ratio,
-back/forward detection reliability, the 768 rail-boundary judgment call) is
-buildable with a reasonable Codex default and does not prevent a testing
-deployment.
+**One genuine blocker, introduced by the Brand Aperture revision to
+Decisions 3 and 4:** the look-through mask/aperture technique requires the
+official Sodales symbol as a true alpha-channel source (SVG, or a PNG with a
+real transparent background matching the exact official geometry). No such
+asset currently exists in the repository — the committed
+`docs/brand/assets/sodales-symbol.png` and its app runtime copies are opaque
+PNGs on a white background. An unauthorized AI-generated transparent
+replacement was created earlier in this milestone, contained visible
+geometry distortion and artifacts, and was reverted; per the standing
+brand-asset rule, a replacement must not be silently generated to unblock
+this. Resolving this requires an explicit human decision between: (a)
+obtaining an approved vector/alpha-channel source from the brand owner, or
+(b) commissioning a deterministic, provenance-documented background removal
+of the current asset, reviewed and approved before entering the official
+asset path. **The Brand Aperture entrance and route-transition mechanism
+cannot be implemented until this is resolved.** Until resolved, the
+previously implemented and shipped scale/opacity entrance (the mechanism
+this revision supersedes) remains the working fallback in production — it is
+not removed or broken by this decision record.
+
+Every other open item above (contrast-safe violet on dark chrome, exact
+millisecond timings, the hero frame aspect ratio, back/forward detection
+reliability, the 768 rail-boundary judgment call) is buildable with a
+reasonable Codex default and does not prevent a testing deployment.
 
 `HANDOVER.md` Unresolved 9 (standalone execution/environment contract) may
 bear on whether a testing deployment can be stood up at all today — that is

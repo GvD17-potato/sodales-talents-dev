@@ -70,7 +70,7 @@ body {
 }
 
 :root[data-sodales-entrance="pending"] .brand-entrance,
-:root[data-sodales-entrance="standard"] .brand-entrance,
+:root[data-sodales-entrance="standard"][data-sodales-aperture="off"] .brand-entrance,
 :root[data-sodales-entrance="reduced"] .brand-entrance {
   display: grid;
   visibility: visible;
@@ -84,20 +84,19 @@ body {
   width: 112px;
   aspect-ratio: 1;
   overflow: hidden;
-  background: #ffffff;
 }
 
 .brand-entrance__asset {
   transform: none;
 }
 
-:root[data-sodales-entrance="standard"] .brand-entrance {
+:root[data-sodales-entrance="standard"][data-sodales-aperture="off"] .brand-entrance {
   animation: entrance-standard-field 1.55s cubic-bezier(0.76, 0, 0.24, 1)
     forwards;
   will-change: opacity;
 }
 
-:root[data-sodales-entrance="standard"] .brand-entrance__asset {
+:root[data-sodales-entrance="standard"][data-sodales-aperture="off"] .brand-entrance__asset {
   animation: entrance-standard-symbol 1.55s cubic-bezier(0.76, 0, 0.24, 1)
     forwards;
   will-change: opacity, transform;
@@ -134,6 +133,12 @@ body {
   transition: opacity 0.18s ease, visibility 0s linear 0.18s;
 }
 
+:root[data-sodales-aperture="on"] .route-transition {
+  /* Aperture path handles all route-transition visuals; keep the fallback
+     overlay fully inert so both can't render at once. */
+  display: none !important;
+}
+
 .route-transition--active {
   opacity: 1;
   visibility: visible;
@@ -155,5 +160,232 @@ body {
   .route-transition--active {
     display: none;
     transition: none;
+  }
+}
+
+/* =========================================================================
+   Sodales Brand Aperture — revised Decision 3 / Decision 4.
+   The symbol's real transparent silhouette is used as a look-through mask:
+   an "obsidian, with a symbol-shaped hole" layer, plus a violet "plug" that
+   fills that hole and fades to reveal the destination (already rendered
+   underneath) through the exact same shape. Both layers scale together via
+   `transform`, so the hole and the plug always line up. Requires
+   mask-composite/-webkit-mask-composite support — see the pending/standard/
+   off gating above and the `data-sodales-aperture` feature detection in
+   layout.tsx. Never used for reduced motion (see Decision 5).
+   ========================================================================= */
+
+:root {
+  --aperture-symbol-size: 112px;
+  --aperture-route-symbol-size: 76px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --aperture-symbol-size: 136px;
+  }
+}
+
+.brand-aperture,
+.route-aperture {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: none;
+  pointer-events: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+:root[data-sodales-entrance="standard"][data-sodales-aperture="on"] .brand-aperture {
+  display: block;
+  pointer-events: auto;
+}
+
+:root[data-sodales-aperture="on"] .route-aperture--active {
+  display: block;
+}
+
+.brand-aperture__hole,
+.brand-aperture__plug,
+.route-aperture__hole,
+.route-aperture__plug {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.brand-aperture__hole,
+.route-aperture__hole {
+  background: var(--sodales-obsidian);
+  -webkit-mask-image: linear-gradient(#000, #000), url("/media/sodales-symbol-transparent.png");
+  mask-image: linear-gradient(#000, #000), url("/media/sodales-symbol-transparent.png");
+  -webkit-mask-position: center, center;
+  mask-position: center, center;
+  -webkit-mask-composite: source-over, xor;
+  mask-composite: add, exclude;
+}
+
+.brand-aperture__plug,
+.route-aperture__plug {
+  background: var(--sodales-violet);
+  -webkit-mask-image: url("/media/sodales-symbol-transparent.png");
+  mask-image: url("/media/sodales-symbol-transparent.png");
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.brand-aperture__hole {
+  -webkit-mask-size: 100% 100%, var(--aperture-symbol-size) var(--aperture-symbol-size);
+  mask-size: 100% 100%, var(--aperture-symbol-size) var(--aperture-symbol-size);
+}
+
+.brand-aperture__plug {
+  -webkit-mask-size: var(--aperture-symbol-size) var(--aperture-symbol-size);
+  mask-size: var(--aperture-symbol-size) var(--aperture-symbol-size);
+}
+
+.route-aperture__hole {
+  -webkit-mask-size: 100% 100%, var(--aperture-route-symbol-size) var(--aperture-route-symbol-size);
+  mask-size: 100% 100%, var(--aperture-route-symbol-size) var(--aperture-route-symbol-size);
+}
+
+.route-aperture__plug {
+  -webkit-mask-size: var(--aperture-route-symbol-size) var(--aperture-route-symbol-size);
+  mask-size: var(--aperture-route-symbol-size) var(--aperture-route-symbol-size);
+}
+
+@keyframes aperture-standard-field {
+  0%, 62.1% {
+    opacity: 1;
+  }
+  93.1% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes aperture-standard-hole {
+  0%, 37.9% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(var(--aperture-scale-end, 15));
+  }
+}
+
+@keyframes aperture-standard-plug {
+  0% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  8.3% {
+    opacity: 0;
+  }
+  24.1% {
+    opacity: 1;
+  }
+  37.9% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  51.7% {
+    opacity: 0.7;
+  }
+  86.2% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(var(--aperture-scale-end, 15));
+  }
+}
+
+:root[data-sodales-entrance="standard"][data-sodales-aperture="on"] .brand-aperture {
+  animation: aperture-standard-field 1.45s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  will-change: opacity;
+}
+
+:root[data-sodales-entrance="standard"][data-sodales-aperture="on"] .brand-aperture__hole {
+  animation: aperture-standard-hole 1.45s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  will-change: transform;
+}
+
+:root[data-sodales-entrance="standard"][data-sodales-aperture="on"] .brand-aperture__plug {
+  animation: aperture-standard-plug 1.45s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  will-change: opacity, transform;
+}
+
+@keyframes aperture-route-field {
+  0%, 61.5% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes aperture-route-hole {
+  0%, 27.7% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(var(--aperture-route-scale-end, 10));
+  }
+}
+
+@keyframes aperture-route-plug {
+  0% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  9.2% {
+    opacity: 0;
+  }
+  15.4% {
+    opacity: 1;
+  }
+  27.7% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  76.9% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(var(--aperture-route-scale-end, 10));
+  }
+}
+
+.route-aperture--active .route-aperture__hole {
+  animation: aperture-route-hole 0.65s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  will-change: transform;
+}
+
+.route-aperture--active .route-aperture__plug {
+  animation: aperture-route-plug 0.65s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  will-change: opacity, transform;
+}
+
+:root[data-sodales-aperture="on"] .route-aperture--active {
+  animation: aperture-route-field 0.65s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  will-change: opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-aperture,
+  .route-aperture,
+  .route-aperture--active {
+    display: none !important;
+    animation: none !important;
   }
 }
