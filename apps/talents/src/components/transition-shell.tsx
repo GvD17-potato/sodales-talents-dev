@@ -56,8 +56,13 @@ export function TransitionShell({ children }: { children: ReactNode }) {
 
   const completeEntrance = useCallback(() => {
     document.documentElement.setAttribute("data-sodales-entrance", "complete");
+    document.documentElement.setAttribute("data-sodales-canvas", "inactive");
     setEntranceMounted(false);
     setEntranceMode(null);
+  }, []);
+
+  const canvasReady = useCallback(() => {
+    document.documentElement.setAttribute("data-sodales-canvas", "ready");
   }, []);
 
   useEffect(() => {
@@ -151,6 +156,10 @@ export function TransitionShell({ children }: { children: ReactNode }) {
       "data-sodales-entrance",
       reducedMotion ? "reduced" : "standard",
     );
+    document.documentElement.setAttribute(
+      "data-sodales-canvas",
+      reducedMotion ? "inactive" : "pending",
+    );
     setEntranceMode(reducedMotion ? "reduced" : "standard");
     setEntranceMounted(true);
     setEntranceRunId((id) => id + 1);
@@ -189,7 +198,11 @@ export function TransitionShell({ children }: { children: ReactNode }) {
       ) : null}
 
       {entranceMounted && entranceMode === "standard" ? (
-        <CanvasEntrance run={entranceRunId} onDone={completeEntrance} />
+        <CanvasEntrance
+          run={entranceRunId}
+          onReady={canvasReady}
+          onDone={completeEntrance}
+        />
       ) : null}
 
       {children}

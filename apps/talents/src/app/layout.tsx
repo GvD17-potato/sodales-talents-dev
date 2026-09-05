@@ -28,6 +28,10 @@ const entranceBootstrap = `(() => {
   }
 
   root.setAttribute("data-sodales-entrance", mode);
+  root.setAttribute(
+    "data-sodales-canvas",
+    mode === "standard" ? "pending" : "inactive",
+  );
 
   // The Brand Aperture look-through effect needs an inverse CSS mask
   // (mask-composite/-webkit-mask-composite) to cut a symbol-shaped hole. This
@@ -72,7 +76,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" data-sodales-entrance="pending" suppressHydrationWarning>
+    <html
+      lang="en"
+      data-sodales-entrance="pending"
+      data-sodales-canvas="pending"
+      suppressHydrationWarning
+    >
       <head>
         <script
           id="sodales-entrance-bootstrap"
@@ -80,6 +89,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         />
       </head>
       <body className={`${inter.variable} ${manrope.variable} overflow-x-hidden antialiased`}>
+        <div className="entrance-first-paint-guard" aria-hidden="true" />
         <TransitionShell>
           <a
             href="#main-content"

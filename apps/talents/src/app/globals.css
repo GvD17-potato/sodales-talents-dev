@@ -28,6 +28,34 @@ body {
   }
 }
 
+@keyframes entrance-first-paint-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.entrance-first-paint-guard {
+  position: fixed;
+  inset: 0;
+  z-index: 115;
+  display: none;
+  pointer-events: none;
+  background: #111111;
+}
+
+:root[data-sodales-entrance="pending"] .entrance-first-paint-guard,
+:root[data-sodales-entrance="standard"][data-sodales-canvas="pending"]
+  .entrance-first-paint-guard {
+  display: block;
+  animation: entrance-first-paint-failsafe 0s linear 7s forwards;
+}
+
+:root[data-sodales-canvas="ready"] .entrance-first-paint-guard {
+  display: none !important;
+  animation: none;
+}
+
 @keyframes entrance-reduced-field {
   0%,
   45% {

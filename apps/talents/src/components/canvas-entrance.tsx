@@ -17,9 +17,19 @@ function smooth(v: number) {
   return clamped * clamped * (3 - 2 * clamped);
 }
 
-export function CanvasEntrance({ run, onDone }: { run: number; onDone: () => void }) {
+export function CanvasEntrance({
+  run,
+  onReady,
+  onDone,
+}: {
+  run: number;
+  onReady: () => void;
+  onDone: () => void;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [visible, setVisible] = useState(true);
+  const readyRef = useRef(onReady);
+  readyRef.current = onReady;
   const doneRef = useRef(onDone);
   doneRef.current = onDone;
   const finishRef = useRef<() => void>(() => {});
@@ -29,6 +39,8 @@ export function CanvasEntrance({ run, onDone }: { run: number; onDone: () => voi
 
     let raf = 0;
     let ended = false;
+    let handedOff = false;
+    document.documentElement.setAttribute("data-sodales-canvas", "pending");
     const el = canvasRef.current;
     if (!el) {
       setVisible(false);
@@ -46,7 +58,6 @@ export function CanvasEntrance({ run, onDone }: { run: number; onDone: () => voi
     document.body.style.overflow = "hidden";
 
     const img = new Image();
-    img.src = SYMBOL_SRC;
 
     function finish() {
       if (ended) return;
@@ -62,12 +73,7 @@ export function CanvasEntrance({ run, onDone }: { run: number; onDone: () => voi
     const timeout = window.setTimeout(finish, WATCHDOG_MS);
 
     img.onload = () => {
-      const start = performance.now();
-
-      const draw = (now: number) => {
-        if (ended) return;
-
-        const t = (now - start) / 1000;
+      const sizeCanvas = () => {
         const w = window.innerWidth;
         const h = window.innerHeight;
         const dpr = Math.min(window.devicePixelRatio, 1.5);
@@ -77,47 +83,77 @@ export function CanvasEntrance({ run, onDone }: { run: number; onDone: () => voi
           el.height = h * dpr;
         }
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { w, h };
+      };
+
+      const paintObsidianFrame = () => {
+        if (ended) return;
+        const { w, h } = sizeCanvas();
         ctx.clearRect(0, 0, w, h);
-
-        const reveal = smooth((t - 1.05) / 1.3);
-        const flight = smooth((t - 1.6) / 3.1);
-        const fade = smooth((t - 3.1) / 1.5);
-
-        // Obsidian field, present until the tail fade recedes it.
         ctx.globalCompositeOperation = "source-over";
-        ctx.globalAlpha = 1 - fade;
+        ctx.globalAlpha = 1;
         ctx.fillStyle = "#111111";
         ctx.fillRect(0, 0, w, h);
 
-        const base = Math.min(w * 0.33, 220);
-        const size = base * Math.exp(flight * Math.log((Math.max(w, h) * 9) / base));
-        const x = w / 2 - size / 2;
-        const y = h / 2 - size / 2;
+        // Keep the static guard for one committed frame after this complete
+        // Obsidian buffer is drawn. The next frame releases the guard and
+        // starts Astra's original timing from t=0 with no visual seam.
+        raf = requestAnimationFrame((start) => {
+          if (ended) return;
+          handedOff = true;
+          readyRef.current();
 
-        // Erase the obsidian through the symbol's own alpha — the aperture.
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.globalAlpha = reveal;
-        ctx.drawImage(img, x, y, size, size);
+          const draw = (now: number) => {
+            if (ended) return;
 
-        // Violet symbol flash, independently fading in then out.
-        ctx.globalCompositeOperation = "source-over";
-        ctx.globalAlpha = smooth(t / 0.75) * (1 - smooth((t - 1.05) / 2.05));
-        ctx.drawImage(img, x, y, size, size);
-        ctx.globalAlpha = 1;
+            const t = (now - start) / 1000;
+            const { w, h } = sizeCanvas();
+            ctx.clearRect(0, 0, w, h);
 
-        if (el.parentElement) el.parentElement.style.background = "transparent";
+            const reveal = smooth((t - 1.05) / 1.3);
+            const flight = smooth((t - 1.6) / 3.1);
+            const fade = smooth((t - 3.1) / 1.5);
 
-        if (t >= NATURAL_FINISH_SECONDS) {
-          finish();
-        } else {
-          raf = requestAnimationFrame(draw);
-        }
+            // Obsidian field, present until the tail fade recedes it.
+            ctx.globalCompositeOperation = "source-over";
+            ctx.globalAlpha = 1 - fade;
+            ctx.fillStyle = "#111111";
+            ctx.fillRect(0, 0, w, h);
+
+            const base = Math.min(w * 0.33, 220);
+            const size = base * Math.exp(flight * Math.log((Math.max(w, h) * 9) / base));
+            const x = w / 2 - size / 2;
+            const y = h / 2 - size / 2;
+
+            // Erase the obsidian through the symbol's own alpha — the aperture.
+            ctx.globalCompositeOperation = "destination-out";
+            ctx.globalAlpha = reveal;
+            ctx.drawImage(img, x, y, size, size);
+
+            // Violet symbol flash, independently fading in then out.
+            ctx.globalCompositeOperation = "source-over";
+            ctx.globalAlpha = smooth(t / 0.75) * (1 - smooth((t - 1.05) / 2.05));
+            ctx.drawImage(img, x, y, size, size);
+            ctx.globalAlpha = 1;
+
+            if (el.parentElement) el.parentElement.style.background = "transparent";
+
+            if (t >= NATURAL_FINISH_SECONDS) {
+              finish();
+            } else {
+              raf = requestAnimationFrame(draw);
+            }
+          };
+
+          draw(start);
+        });
       };
 
-      raf = requestAnimationFrame(draw);
+      raf = requestAnimationFrame(paintObsidianFrame);
     };
 
     img.onerror = finish;
+    img.src = SYMBOL_SRC;
 
     const dismiss = (event: KeyboardEvent) => {
       if (event.key === "Escape") finish();
@@ -129,6 +165,9 @@ export function CanvasEntrance({ run, onDone }: { run: number; onDone: () => voi
       window.clearTimeout(timeout);
       cancelAnimationFrame(raf);
       document.body.style.overflow = previousOverflow;
+      if (!handedOff) {
+        document.documentElement.setAttribute("data-sodales-canvas", "inactive");
+      }
       window.removeEventListener("keydown", dismiss);
     };
   }, [run]);
