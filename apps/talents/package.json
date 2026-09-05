@@ -5,28 +5,40 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx src/db/seed.ts",
+    "db:smoke": "node ../../scripts/db-smoke.mjs talents",
+    "db:studio": "drizzle-kit studio",
     "start": "next start",
     "lint": "eslint .",
+    "test:domain": "tsx --test src/domain/domain.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
     "@sodales/ui": "workspace:*",
+    "drizzle-orm": "^0.45.2",
     "lucide-react": "^0.468.0",
+    "next": "15.5.25",
+    "postgres": "^3.4.9",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.25",
-    "sonner": "^2.0.7"
+    "server-only": "^0.0.1",
+    "sonner": "^2.0.7",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "15.5.25",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "tsx": "^4.23.13",
+    "typescript": "^5"
   }
 }

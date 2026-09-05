@@ -153,7 +153,22 @@ Step 12B decision record:
 
 Current phase:
 
-**Testing milestone — P0 deployed and awaiting human presentation review.**
+**Backend Phase 1 — Source checkpoint approved; remote Neon integration pending
+credentials.**
+
+The approved P0 frontend remains deployed and fixture-backed. Phase 1 is an
+additive source foundation containing the Neon/Postgres connection
+foundation, seven-table Drizzle schema and initial migration, category seed,
+database smoke script, publication/domain primitives, and focused tests. No
+remote migration has been applied because `DATABASE_URL` is not configured.
+Neon Auth, persisted actions, dashboards/admin, and SQL-backed public reads
+remain deferred.
+
+**SOURCE CHECKPOINT READY; REMOTE NEON INTEGRATION PENDING CREDENTIALS.** The
+current Phase 1 seed contains the six categories only. Final SDD seed acceptance
+remains deferred to the Auth/integration phase and must still add the
+first-admin bootstrap, six demo talent auth users/profiles, four inquiries, and
+the specified historical moderation demo data.
 
 The senior developer authorised and Codex completed the same-day P0 testing
 implementation using Step 12B Decisions 1–8 as its UI/brand/motion basis. This
@@ -384,6 +399,11 @@ Confirmed transitions include:
 - `hidden -> pending` via explicit resubmit
 
 Only approved profiles are public.
+
+Phase 1 supplemental decision: pending-profile normalized no-op saves preserve
+`pending`. Only an actual persisted profile change counts as an edit that
+withdraws a pending submission to `draft`; this includes reorder-only,
+material/content, and any other genuine persisted change.
 
 ### Publication completeness gates
 
@@ -938,17 +958,11 @@ in §4c.
 
 ## Immediate Next Task
 
-**Human presentation review of the deployed expedited P0 testing milestone.**
+**Configure Neon development credentials and verify Backend Phase 1 remotely.**
 
-Use the protected preview and deployment record under Current Project State.
-Review the responsive public routes, approved brand treatment, first-load
-entrance, top-level transitions, reduced-motion alternative, fixture-backed
-search/filter behavior, profile inquiry shell, and auth shells.
+Verify the approved Phase 1 migration, categories-only seed, and database smoke
+script against the actual Neon development database. Do not push, deploy, or
+begin Phase 2 as part of that verification.
 
-Do not treat this milestone as authority to begin the deferred Neon, auth,
-dashboard, moderation, or domain implementation. Those remain subject to the
-production gate ladder and still-open infrastructure decisions above. Do not
-make new product decisions without evidence.
-
-When human review completes or production implementation is authorised, update
-this file. Do not rely on any agent's conversation history.
+After approval, the next implementation phase is **Phase 2 — Neon Auth +
+Signup Provisioning**. Do not rely on any agent's conversation history.
