@@ -51,22 +51,22 @@ export function InquiryDialog({ talentName }: { talentName: string }) {
           ) : (
             <form onSubmit={handleSubmit} className="mt-8 space-y-5">
               <div>
-                <label htmlFor="inquiry-name" className="mb-2 block text-xs font-semibold uppercase tracking-[0.13em]">
+                <label htmlFor="inquiry-name" className="mb-2 block text-[13px] font-medium">
                   Your name
                 </label>
-                <input id="inquiry-name" name="name" required minLength={2} maxLength={80} className="min-h-12 w-full border border-graphite/30 bg-white px-4 outline-none focus:border-violet" />
+                <input id="inquiry-name" name="name" required minLength={2} maxLength={80} className="min-h-12 w-full border border-graphite/40 bg-transparent px-3.5 text-base outline-none focus:border-violet focus:shadow-[0_0_0_1px_var(--sodales-violet)]" />
               </div>
               <div>
-                <label htmlFor="inquiry-email" className="mb-2 block text-xs font-semibold uppercase tracking-[0.13em]">
-                  Email
+                <label htmlFor="inquiry-email" className="mb-2 block text-[13px] font-medium">
+                  Email address
                 </label>
-                <input id="inquiry-email" name="email" type="email" required maxLength={254} className="min-h-12 w-full border border-graphite/30 bg-white px-4 outline-none focus:border-violet" />
+                <input id="inquiry-email" name="email" type="email" required maxLength={254} className="min-h-12 w-full border border-graphite/40 bg-transparent px-3.5 text-base outline-none focus:border-violet focus:shadow-[0_0_0_1px_var(--sodales-violet)]" />
               </div>
               <div>
-                <label htmlFor="inquiry-message" className="mb-2 block text-xs font-semibold uppercase tracking-[0.13em]">
-                  Project brief
+                <label htmlFor="inquiry-message" className="mb-2 block text-[13px] font-medium">
+                  What are you imagining?
                 </label>
-                <textarea id="inquiry-message" name="message" required minLength={20} maxLength={2000} rows={6} className="w-full resize-y border border-graphite/30 bg-white px-4 py-3 outline-none focus:border-violet" />
+                <textarea id="inquiry-message" name="message" required minLength={20} maxLength={2000} rows={6} placeholder="Tell us about your project, timeline, and what you need." className="w-full resize-y border border-graphite/40 bg-transparent px-3.5 py-3 text-base outline-none focus:border-violet focus:shadow-[0_0_0_1px_var(--sodales-violet)]" />
               </div>
               <input aria-hidden="true" tabIndex={-1} autoComplete="off" name="website" className="hidden" />
               <Button type="submit">Review preview submission</Button>

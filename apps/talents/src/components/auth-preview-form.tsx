@@ -13,26 +13,30 @@ export function AuthPreviewForm({ mode }: { mode: "login" | "sign-up" }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-9 space-y-5">
+    <form onSubmit={handleSubmit} className="mt-9 space-y-6">
+      <p className="border-l-2 border-violet bg-violet-soft/45 p-4 text-xs leading-6 text-graphite">
+        Interactive preview. Use sample details; no real account or password
+        is stored.
+      </p>
       {isSignUp ? (
         <div>
-          <label htmlFor="auth-name" className="mb-2 block text-xs font-semibold uppercase tracking-[0.13em]">
-            Name
+          <label htmlFor="auth-name" className="mb-2 block text-[13px] font-medium">
+            Full name
           </label>
-          <input id="auth-name" name="name" required minLength={2} maxLength={80} autoComplete="name" className="min-h-12 w-full border border-graphite/30 bg-white px-4 outline-none focus:border-violet" />
+          <input id="auth-name" name="name" required minLength={2} maxLength={80} autoComplete="name" className="min-h-12 w-full border border-graphite/40 bg-transparent px-3.5 text-base outline-none focus:border-violet focus:shadow-[0_0_0_1px_var(--sodales-violet)]" />
         </div>
       ) : null}
       <div>
-        <label htmlFor="auth-email" className="mb-2 block text-xs font-semibold uppercase tracking-[0.13em]">
-          Email
+        <label htmlFor="auth-email" className="mb-2 block text-[13px] font-medium">
+          Email address
         </label>
-        <input id="auth-email" name="email" type="email" required autoComplete="email" className="min-h-12 w-full border border-graphite/30 bg-white px-4 outline-none focus:border-violet" />
+        <input id="auth-email" name="email" type="email" required autoComplete="email" className="min-h-12 w-full border border-graphite/40 bg-transparent px-3.5 text-base outline-none focus:border-violet focus:shadow-[0_0_0_1px_var(--sodales-violet)]" />
       </div>
       <div>
-        <label htmlFor="auth-password" className="mb-2 block text-xs font-semibold uppercase tracking-[0.13em]">
+        <label htmlFor="auth-password" className="mb-2 block text-[13px] font-medium">
           Password
         </label>
-        <input id="auth-password" name="password" type="password" required minLength={8} autoComplete={isSignUp ? "new-password" : "current-password"} className="min-h-12 w-full border border-graphite/30 bg-white px-4 outline-none focus:border-violet" />
+        <input id="auth-password" name="password" type="password" required minLength={8} autoComplete={isSignUp ? "new-password" : "current-password"} className="min-h-12 w-full border border-graphite/40 bg-transparent px-3.5 text-base outline-none focus:border-violet focus:shadow-[0_0_0_1px_var(--sodales-violet)]" />
       </div>
       {notice ? (
         <p role="alert" className="border border-violet/35 bg-violet-soft/45 p-4 text-sm leading-6 text-graphite">

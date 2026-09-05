@@ -1,10 +1,11 @@
 import { Button } from "@sodales/ui/button";
-import { ArrowDown, ArrowRight } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { SearchForm } from "@/components/search-form";
-import { TalentRow } from "@/components/talent-row";
+import { TalentProfileRow } from "@/components/talent-profile-row";
 import { TransitionLink } from "@/components/transition-shell";
+import { WRAP } from "@/lib/layout";
 import {
   getPublicProofCounts,
   listApprovedTalents,
@@ -18,168 +19,212 @@ export default async function HomePage() {
     getPublicProofCounts(),
   ]);
 
+  const categoriesWithCounts = categories.map((category) => ({
+    ...category,
+    count: talents.filter((talent) => talent.category.slug === category.slug).length,
+  }));
+
+  const popularSearches = categories.slice(0, 3);
+
   return (
     <main id="main-content">
-      <section className="border-b border-border">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 sm:py-16 min-[1100px]:grid-cols-[1.12fr_0.88fr] min-[1100px]:items-stretch min-[1100px]:gap-14 min-[1100px]:px-8 min-[1100px]:py-20">
-          <div className="flex flex-col justify-between">
-            <div>
-              <p className="mb-7 text-xs font-semibold uppercase tracking-[0.2em] text-violet">
-                Curated creative talent
-              </p>
-              <h1 className="max-w-4xl font-display text-[clamp(3.1rem,7vw,6.9rem)] font-semibold leading-[0.9] tracking-[-0.065em] text-obsidian">
-                Find the right mind for the work that matters.
-              </h1>
-              <p className="mt-7 max-w-2xl text-base leading-7 text-graphite sm:text-lg sm:leading-8">
+      <section className="border-b border-border pt-8 sm:pt-10 lg:pt-16">
+        <div className={`grid gap-0 min-[1100px]:grid-cols-[1.05fr_1fr] min-[1100px]:gap-14 ${WRAP}`}>
+          <div className="pt-4">
+            <p className="mb-7 flex items-center text-xs font-semibold uppercase tracking-[0.2em] text-violet">
+              <span aria-hidden="true" className="mr-3 inline-block h-0.5 w-6 bg-violet" />
+              Curated creative talent
+            </p>
+            <h1 className="max-w-4xl font-display text-[clamp(3.75rem,6.45vw,6rem)] font-semibold leading-[1.035] tracking-[-0.065em] text-obsidian">
+              Find the <span className="text-violet">right mind</span> for the work that
+              matters.
+            </h1>
+            <div className="mt-8 flex items-center justify-between gap-5">
+              <p className="max-w-md text-base leading-[1.8] text-graphite">
                 Independent designers, developers, photographers, writers,
                 filmmakers, and musicians—curated by Sodales for ambitious
                 projects.
               </p>
+              <a
+                href="#discover"
+                aria-label="Explore the collective"
+                className="hidden size-[54px] shrink-0 place-items-center rounded-full border border-graphite/30 -rotate-45 transition-colors hover:bg-violet-soft sm:grid"
+              >
+                <ArrowRight aria-hidden="true" className="rotate-45" />
+              </a>
             </div>
+          </div>
 
-            <div className="mt-10 max-w-3xl">
-              <SearchForm />
-              <div className="mt-5 flex flex-wrap items-center gap-4">
-                <Button asChild>
-                  <TransitionLink href="/talents">
-                    Browse all talent <ArrowRight aria-hidden="true" size={17} />
-                  </TransitionLink>
-                </Button>
-                <TransitionLink
-                  href="/sign-up"
-                  className="min-h-11 border-b border-obsidian py-3 text-sm font-semibold text-obsidian transition-colors hover:border-violet hover:text-violet motion-reduce:transition-none"
+          <figure className="relative min-w-0 pb-8">
+            <Image
+              src="/media/testing/talents-studio-hero.png"
+              alt=""
+              aria-hidden="true"
+              width={1448}
+              height={1086}
+              priority
+              fetchPriority="high"
+              className="h-[280px] w-full object-cover sm:h-[380px] min-[1100px]:h-[418px]"
+            />
+            <span className="absolute left-4 top-4 bg-ivory px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.12em] text-graphite">
+              Astra design reference — testing only
+            </span>
+            <figcaption className="flex items-center justify-between pt-3 text-[10px] tracking-[0.08em] text-graphite/70">
+              <span>TEMPORARY VISUAL REFERENCE</span>
+              <span className="flex items-center gap-3 text-[11px] tracking-normal">
+                Not final photography <ArrowUpRight aria-hidden="true" size={14} />
+              </span>
+            </figcaption>
+          </figure>
+
+          <div className="min-[1100px]:col-span-2">
+            <SearchForm />
+            <div className="mt-4 flex flex-wrap items-center gap-6 text-[11px]">
+              <span className="text-[9px] font-semibold tracking-[0.14em] text-graphite/60">
+                POPULAR SEARCHES
+              </span>
+              {popularSearches.map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/talents?category=${category.slug}`}
+                  className="flex items-center gap-2 text-graphite/80 hover:text-violet"
                 >
-                  Join as a talent
-                </TransitionLink>
-              </div>
+                  {category.name}
+                  <ArrowUpRight aria-hidden="true" size={12} />
+                </Link>
+              ))}
             </div>
-          </div>
-
-          <div className="relative min-h-[360px] overflow-hidden bg-violet-deep sm:min-h-[480px] min-[1100px]:min-h-[640px]">
-            <div className="absolute inset-x-0 top-0 flex items-center border-b border-white/20 px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-ivory/70">
-              <span>Creative intelligence</span>
-            </div>
-            <div className="absolute inset-0 grid place-items-center px-10 pt-12">
-              <div className="grid aspect-square w-[46%] max-w-[230px] place-items-center">
-                <Image
-                  src="/media/sodales-symbol-transparent.png"
-                  alt=""
-                  aria-hidden="true"
-                  width={203}
-                  height={203}
-                  className="h-auto w-full"
-                  priority
-                />
-              </div>
-            </div>
-            <p className="absolute bottom-5 left-5 max-w-[16rem] text-xs leading-5 text-ivory/65">
-              Official Sodales symbol shown in the reserved editorial hero frame.
-            </p>
           </div>
         </div>
       </section>
 
-      <section aria-labelledby="proof-heading" className="border-b border-border bg-white/35">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-5">
-            <h2 id="proof-heading" className="text-xs font-semibold uppercase tracking-[0.18em] text-graphite">
-              Live collective
-            </h2>
-            <ArrowDown aria-hidden="true" size={18} className="text-violet" />
-          </div>
-          <dl className="mt-8 grid grid-cols-2 gap-px border border-border bg-border sm:grid-cols-4">
-            {[
-              ["Approved talent", counts.talents],
-              ["Disciplines", counts.categories],
-              ["Creative skills", counts.skills],
-              ["Locations", counts.cities],
-            ].map(([label, value]) => (
-              <div key={label} className="bg-ivory p-5 sm:p-7">
-                <dd className="font-display text-4xl font-semibold tracking-[-0.04em] text-obsidian sm:text-5xl">
-                  {value}
-                </dd>
-                <dt className="mt-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-graphite/70">
-                  {label}
-                </dt>
-              </div>
-            ))}
-          </dl>
+      <section aria-labelledby="proof-heading" className="border-b border-t border-border">
+        <div className={`grid grid-cols-2 py-7 sm:grid-cols-4 ${WRAP}`}>
+          {[
+            [String(counts.talents).padStart(2, "0"), "Approved talent"],
+            [String(counts.categories).padStart(2, "0"), "Creative disciplines"],
+            [String(counts.skills), "Distinct skills"],
+            [String(counts.cities).padStart(2, "0"), "Locations"],
+          ].map(([value, label], index) => (
+            <div
+              key={label}
+              className={`flex flex-col border-graphite/20 px-5 first:pl-0 sm:border-r sm:px-9 sm:last:border-r-0 ${
+                index >= 2 ? "mt-6 sm:mt-0" : ""
+              }`}
+            >
+              <strong className="mb-2 font-display text-4xl font-medium tracking-[-0.06em] text-obsidian">
+                {value}
+                <span aria-hidden="true" className="ml-3 align-top text-lg text-violet">
+                  ↗
+                </span>
+              </strong>
+              <span id={index === 0 ? "proof-heading" : undefined} className="text-[9px] font-semibold uppercase tracking-[0.15em] text-graphite/70">
+                {label}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="sr-only">
+          <ArrowDown aria-hidden="true" />
         </div>
       </section>
 
-      <section aria-labelledby="categories-heading" className="border-b border-border">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-          <div className="grid gap-9 md:grid-cols-[0.7fr_1.3fr] md:gap-16">
+      <section aria-labelledby="categories-heading" className="border-b border-border" id="discover">
+        <div className={`grid gap-9 py-16 sm:py-20 md:grid-cols-[0.7fr_1.3fr] md:gap-16 lg:py-24 ${WRAP}`}>
+          <div className="flex items-start justify-between gap-8 md:block">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet">Disciplines</p>
-              <h2 id="categories-heading" className="mt-4 max-w-md font-display text-4xl font-semibold leading-[1] tracking-[-0.045em] sm:text-5xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet">
+                01 / Find your people
+              </p>
+              <h2 id="categories-heading" className="mt-4 max-w-md font-display text-4xl font-semibold leading-[1.06] tracking-[-0.055em] sm:text-5xl">
                 Start with the craft you need.
               </h2>
             </div>
-            <ol className="border-b border-border">
-              {categories.map((category, index) => (
-                <li key={category.id}>
-                  <Link
-                    href={`/talents?category=${category.slug}`}
-                    className="group grid grid-cols-[42px_1fr_auto] items-center gap-3 border-t border-border py-5 transition-colors hover:bg-white/50 motion-reduce:transition-none sm:px-3"
-                  >
-                    <span className="text-xs tracking-[0.14em] text-violet">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span>
-                      <span className="block font-display text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">
-                        {category.name}
-                      </span>
-                      <span className="mt-1 hidden text-sm text-graphite/70 sm:block">
-                        {category.description}
-                      </span>
-                    </span>
-                    <ArrowRight aria-hidden="true" className="text-graphite group-hover:text-violet" size={19} />
-                  </Link>
-                </li>
-              ))}
-            </ol>
+            <p className="hidden max-w-[340px] text-sm leading-[1.8] text-graphite md:block">
+              Six disciplines. Countless possibilities. Find the right mind
+              for what you have in mind.
+            </p>
           </div>
+          <ol className="border-b border-graphite/40">
+            {categoriesWithCounts.map((category, index) => (
+              <li key={category.id}>
+                <Link
+                  href={`/talents?category=${category.slug}`}
+                  className="group grid grid-cols-[30px_1fr_auto_22px] items-center gap-4 border-t border-graphite/40 py-6 transition-[padding-left,color] duration-300 hover:pl-3 hover:text-violet motion-reduce:transition-none sm:grid-cols-[42px_1fr_85px_24px]"
+                >
+                  <span className="text-xs text-graphite/50">
+                    0{index + 1}
+                  </span>
+                  <span>
+                    <span className="block font-display text-2xl font-semibold tracking-[-0.04em] sm:text-[26px]">
+                      {category.name}
+                    </span>
+                    <span className="mt-1 hidden text-[13px] text-graphite/75 sm:block">
+                      {category.description}
+                    </span>
+                  </span>
+                  <span className="hidden text-xs text-graphite/60 sm:block">
+                    {category.count} talent{category.count === 1 ? "" : "s"}
+                  </span>
+                  <ArrowUpRight aria-hidden="true" className="text-graphite group-hover:text-violet" size={22} />
+                </Link>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
-      <section aria-labelledby="featured-heading" className="border-b border-border bg-white/25">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-          <div className="mb-10 flex items-end justify-between gap-5">
+      <section aria-labelledby="featured-heading" className="border-b border-border bg-[#eae7e1]">
+        <div className={`py-16 sm:py-20 lg:py-24 ${WRAP}`}>
+          <div className="mb-11 flex items-end justify-between gap-5">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet">Featured talent</p>
-              <h2 id="featured-heading" className="mt-4 font-display text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">
-                Proof of work, first.
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet">
+                02 / The people behind the possibilities
+              </p>
+              <h2 id="featured-heading" className="mt-4 font-display text-4xl font-semibold leading-[1.06] tracking-[-0.055em] sm:text-5xl">
+                Independent minds.
+                <br />
+                Remarkable potential.
               </h2>
             </div>
-            <TransitionLink href="/talents" className="hidden text-sm font-semibold hover:text-violet sm:block">
-              View directory →
-            </TransitionLink>
+            <Button asChild variant="secondary" className="hidden sm:inline-flex">
+              <TransitionLink href="/talents">
+                Meet the collective <ArrowUpRight aria-hidden="true" size={17} />
+              </TransitionLink>
+            </Button>
           </div>
-          <div className="border-b border-border">
-            {talents.slice(0, 3).map((talent, index) => (
-              <TalentRow key={talent.id} talent={talent} index={index} />
+          <div className="grid gap-x-10 sm:grid-cols-2">
+            {talents.slice(0, 4).map((talent, index) => (
+              <TalentProfileRow key={talent.id} talent={talent} index={index} />
             ))}
           </div>
         </div>
       </section>
 
       <section aria-labelledby="process-heading">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet">How it works</p>
-          <h2 id="process-heading" className="mt-4 font-display text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">
-            A considered way to collaborate.
+        <div className={`py-16 sm:py-20 lg:py-24 ${WRAP}`}>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet">
+            03 / From hello to let&rsquo;s go
+          </p>
+          <h2 id="process-heading" className="mt-4 font-display text-4xl font-semibold leading-[1.06] tracking-[-0.055em] sm:text-5xl">
+            Good work starts
+            <br />
+            with a conversation.
           </h2>
-          <ol className="mt-10 grid border-y border-border md:grid-cols-3">
+          <ol className="mt-10 grid gap-8 md:grid-cols-3 md:gap-14">
             {[
               ["01", "Browse", "Explore approved talent by discipline, capability, or location."],
               ["02", "Inquire", "Share the project context with the Sodales review team."],
               ["03", "Collaborate", "If there is a fit, Sodales coordinates the next conversation."],
             ].map(([number, title, copy]) => (
-              <li key={number} className="border-b border-border py-8 last:border-b-0 md:border-b-0 md:border-r md:px-8 md:first:pl-0 md:last:border-r-0">
-                <span className="text-xs font-semibold tracking-[0.16em] text-violet">{number}</span>
-                <h3 className="mt-7 font-display text-3xl font-semibold tracking-[-0.035em]">{title}</h3>
-                <p className="mt-3 max-w-sm text-sm leading-6 text-graphite/75">{copy}</p>
+              <li key={number}>
+                <span className="font-display text-5xl font-normal leading-none tracking-[-0.06em] text-violet">
+                  {number}
+                </span>
+                <h3 className="mt-6 border-t border-graphite/40 pt-6 font-display text-2xl font-semibold tracking-[-0.035em]">
+                  {title}
+                </h3>
+                <p className="mt-4 max-w-sm text-sm leading-[1.8] text-graphite/80">{copy}</p>
               </li>
             ))}
           </ol>
@@ -187,15 +232,21 @@ export default async function HomePage() {
       </section>
 
       <section className="bg-obsidian text-ivory">
-        <div className="mx-auto flex max-w-7xl flex-col items-start gap-9 px-4 py-16 sm:px-6 sm:py-20 md:flex-row md:items-end md:justify-between lg:px-8 lg:py-24">
+        <div className={`flex flex-col items-start gap-9 py-16 sm:py-20 md:flex-row md:items-center md:justify-between lg:py-24 ${WRAP}`}>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-accessible">For independent creatives</p>
-            <h2 className="mt-4 max-w-3xl font-display text-4xl font-semibold leading-[1] tracking-[-0.045em] sm:text-6xl">
-              Bring your best work into the collective.
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#aaa0d8]">
+              Your next chapter starts here
+            </p>
+            <h2 className="mt-4 max-w-2xl font-display text-4xl font-medium leading-[1.06] tracking-[-0.055em] sm:text-6xl">
+              You bring the talent.
+              <br />
+              We make the connection.
             </h2>
           </div>
           <Button asChild className="border-violet-accessible bg-violet-accessible text-obsidian hover:bg-violet-soft">
-            <TransitionLink href="/sign-up">Join as a talent</TransitionLink>
+            <TransitionLink href="/sign-up">
+              Find your place <ArrowUpRight aria-hidden="true" size={17} />
+            </TransitionLink>
           </Button>
         </div>
       </section>

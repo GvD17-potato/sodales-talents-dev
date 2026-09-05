@@ -13,17 +13,15 @@ import {
   useRef,
   useState,
 } from "react";
+import { CanvasEntrance } from "./canvas-entrance";
 
 const TOP_LEVEL_ROUTES = new Set(["/", "/talents", "/login", "/sign-up"]);
 type EntranceMode = "standard" | "reduced";
 
-const ENTRANCE_SYMBOL_SIZE_MOBILE = 112;
-const ENTRANCE_SYMBOL_SIZE_DESKTOP = 136;
 const ROUTE_SYMBOL_SIZE = 76;
 const APERTURE_MARGIN = 1.2;
 const APERTURE_MIN_SCALE = 4;
 
-const ENTRANCE_TIMEOUT_MS = 1600; // covers both the 1.45s aperture and 1.55s fallback path, onAnimationEnd normally fires first
 const REDUCED_TIMEOUT_MS = 700;
 const ROUTE_NAVIGATE_DELAY_MS = 150;
 const ROUTE_TOTAL_MS = 650;
@@ -31,6 +29,7 @@ const ROUTE_TOTAL_MS = 650;
 type NavigationContextValue = {
   navigate: (href: string) => void;
   reducedMotion: boolean;
+  replay: () => void;
 };
 
 const NavigationContext = createContext<NavigationContextValue | null>(null);
@@ -48,18 +47,15 @@ export function TransitionShell({ children }: { children: ReactNode }) {
   const routeCompleteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [entranceMounted, setEntranceMounted] = useState(true);
   const [entranceMode, setEntranceMode] = useState<EntranceMode | null>(null);
+  const [entranceRunId, setEntranceRunId] = useState(0);
   const [apertureSupported, setApertureSupported] = useState(false);
-  const [entranceScale, setEntranceScale] = useState(APERTURE_MIN_SCALE);
   const [routeActive, setRouteActive] = useState(false);
   const [routeScale, setRouteScale] = useState(APERTURE_MIN_SCALE);
   const [routeKey, setRouteKey] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
 
   const completeEntrance = useCallback(() => {
-    document.documentElement.setAttribute(
-      "data-sodales-entrance",
-      "complete",
-    );
+    document.documentElement.setAttribute("data-sodales-entrance", "complete");
     setEntranceMounted(false);
     setEntranceMode(null);
   }, []);
@@ -73,39 +69,31 @@ export function TransitionShell({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const mode = document.documentElement.getAttribute(
-      "data-sodales-entrance",
-    );
+    const mode = document.documentElement.getAttribute("data-sodales-entrance");
     setApertureSupported(
       document.documentElement.getAttribute("data-sodales-aperture") === "on",
     );
 
     if (mode === "standard" || mode === "reduced") {
       setEntranceMode(mode);
-      if (mode === "standard") {
-        const baseSize =
-          window.innerWidth >= 768
-            ? ENTRANCE_SYMBOL_SIZE_DESKTOP
-            : ENTRANCE_SYMBOL_SIZE_MOBILE;
-        setEntranceScale(computeApertureScale(baseSize));
-      }
       return;
     }
 
     setEntranceMounted(false);
   }, []);
 
+  // Only the reduced-motion path (a short CSS opacity dissolve) is driven
+  // from here. The standard/Canvas entrance owns its own watchdog timeout
+  // and Escape handling internally (see canvas-entrance.tsx), matching the
+  // Astra reference's self-contained lifecycle.
   useEffect(() => {
-    if (!entranceMode) return;
-    const timeout = window.setTimeout(
-      completeEntrance,
-      entranceMode === "reduced" ? REDUCED_TIMEOUT_MS : ENTRANCE_TIMEOUT_MS,
-    );
+    if (entranceMode !== "reduced") return;
+    const timeout = window.setTimeout(completeEntrance, REDUCED_TIMEOUT_MS);
     return () => window.clearTimeout(timeout);
   }, [completeEntrance, entranceMode]);
 
   useEffect(() => {
-    if (!entranceMode) return;
+    if (entranceMode !== "reduced") return;
     const dismiss = (event: KeyboardEvent) => {
       if (event.key === "Escape") completeEntrance();
     };
@@ -145,51 +133,46 @@ export function TransitionShell({ children }: { children: ReactNode }) {
       setRouteScale(computeApertureScale(ROUTE_SYMBOL_SIZE));
       setRouteActive(true);
 
-      navigationTimer.current = setTimeout(
-        () => router.push(href),
-        ROUTE_NAVIGATE_DELAY_MS,
-      );
-      routeCompleteTimer.current = setTimeout(
-        () => setRouteActive(false),
-        ROUTE_TOTAL_MS,
-      );
+      navigationTimer.current = setTimeout(() => router.push(href), ROUTE_NAVIGATE_DELAY_MS);
+      routeCompleteTimer.current = setTimeout(() => setRouteActive(false), ROUTE_TOTAL_MS);
     },
     [pathname, reducedMotion, router],
   );
 
-  const entranceAnimationEnd = (event: React.AnimationEvent<HTMLButtonElement>) => {
+  // Footer "Replay entrance" — mirrors the Astra reference's `replay()`:
+  // jump home, reset scroll, and re-run the entrance, bypassing the
+  // once-per-session gate. Still respects reduced motion (the reduced,
+  // non-canvas path plays instead of the full Canvas flight), exactly as
+  // Astra's own replay does by re-entering the same mode check on mount.
+  const replay = useCallback(() => {
+    if (pathname !== "/") router.push("/");
+    window.scrollTo({ top: 0, behavior: "instant" });
+    document.documentElement.setAttribute(
+      "data-sodales-entrance",
+      reducedMotion ? "reduced" : "standard",
+    );
+    setEntranceMode(reducedMotion ? "reduced" : "standard");
+    setEntranceMounted(true);
+    setEntranceRunId((id) => id + 1);
+  }, [pathname, reducedMotion, router]);
+
+  const reducedAnimationEnd = (event: React.AnimationEvent<HTMLButtonElement>) => {
     if (event.currentTarget === event.target) completeEntrance();
   };
 
   return (
-    <NavigationContext.Provider value={{ navigate, reducedMotion }}>
-      {entranceMounted ? (
+    <NavigationContext.Provider value={{ navigate, reducedMotion, replay }}>
+      {entranceMounted && entranceMode !== "standard" ? (
         // Rendered unconditionally (not gated on `entranceMode`, which only
         // resolves post-hydration) so this element already exists in the DOM
-        // at first paint. Visibility is decided entirely by the
-        // `data-sodales-entrance`/`data-sodales-aperture` attributes on
-        // `<html>`, which the pre-hydration bootstrap script resolves before
-        // the browser paints anything — the same mechanism that prevents the
-        // homepage flash. If mode isn't "standard" or aperture isn't
-        // supported, CSS keeps this permanently display:none.
+        // at first paint — the same no-flash mechanism as before. Once
+        // `entranceMode` resolves to "standard" this is hidden by CSS
+        // (see the `[data-sodales-entrance="pending"]` / `="reduced"` rules
+        // in globals.css) and the Canvas entrance below takes over instead.
         <button
           type="button"
           aria-label="Dismiss introduction"
-          onAnimationEnd={entranceAnimationEnd}
-          onClick={completeEntrance}
-          className="brand-aperture"
-          style={{ "--aperture-scale-end": entranceScale } as CSSProperties}
-        >
-          <span className="brand-aperture__hole" aria-hidden="true" />
-          <span className="brand-aperture__plug" aria-hidden="true" />
-        </button>
-      ) : null}
-
-      {entranceMounted ? (
-        <button
-          type="button"
-          aria-label="Dismiss introduction"
-          onAnimationEnd={entranceAnimationEnd}
+          onAnimationEnd={reducedAnimationEnd}
           onClick={completeEntrance}
           className="brand-entrance"
         >
@@ -203,6 +186,10 @@ export function TransitionShell({ children }: { children: ReactNode }) {
             />
           </span>
         </button>
+      ) : null}
+
+      {entranceMounted && entranceMode === "standard" ? (
+        <CanvasEntrance run={entranceRunId} onDone={completeEntrance} />
       ) : null}
 
       {children}
@@ -223,12 +210,7 @@ export function TransitionShell({ children }: { children: ReactNode }) {
           className={`route-transition ${routeActive ? "route-transition--active" : ""}`}
         >
           <span className="route-transition__asset">
-            <Image
-              src="/media/sodales-symbol-transparent.png"
-              alt=""
-              width={203}
-              height={203}
-            />
+            <Image src="/media/sodales-symbol-transparent.png" alt="" width={203} height={203} />
           </span>
         </div>
       )}
@@ -236,19 +218,17 @@ export function TransitionShell({ children }: { children: ReactNode }) {
   );
 }
 
-type TransitionLinkProps = Omit<
-  React.AnchorHTMLAttributes<HTMLAnchorElement>,
-  "href"
-> & {
+export function useEntranceReplay() {
+  const context = useContext(NavigationContext);
+  if (!context) throw new Error("useEntranceReplay must be used within TransitionShell");
+  return context.replay;
+}
+
+type TransitionLinkProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & {
   href: string;
 };
 
-export function TransitionLink({
-  href,
-  onClick,
-  children,
-  ...props
-}: TransitionLinkProps) {
+export function TransitionLink({ href, onClick, children, ...props }: TransitionLinkProps) {
   const context = useContext(NavigationContext);
 
   function handleClick(event: MouseEvent<HTMLAnchorElement>) {

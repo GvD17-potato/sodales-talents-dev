@@ -5,6 +5,7 @@
   "sideEffects": ["**/*.css"],
   "exports": {
     "./button": "./src/components/button.tsx",
+    "./status-badge": "./src/components/status-badge.tsx",
     "./styles.css": "./src/globals.css"
   },
   "dependencies": {
