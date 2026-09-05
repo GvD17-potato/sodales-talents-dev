@@ -126,29 +126,49 @@ Completed:
 - **Step 11 / Revision 2 pre-implementation audit completed.**
 - **Revision 2 human review completed — APPROVED.**
 - **Step 12A — Domain Requirements Clarification ✅ COMPLETE** — human-approved.
+- **Step 12B — UI / Brand / Motion Requirements Clarification ✅ COMPLETE** —
+  human-approved, expedited (testing-milestone deadline). Decisions 1–8 all
+  approved.
+- Official Sodales brand mark assets added
+  (`docs/brand/assets/sodales-symbol.png`,
+  `docs/brand/assets/sodales-wordmark-horizontal.png`).
 
 Revision 2 audit of record:
 
 `docs/audits/pre-implementation-audit-r2.md`
 
+Step 12A decision record:
+
+`docs/decisions/step-12a-domain-decisions.md`
+
+Step 12B decision record:
+
+`docs/decisions/step-12b-ui-motion-decisions.md`
+
 Current phase:
 
-**Step 12B — UI / Brand / Motion Requirements Clarification**
+**Testing milestone — implementation mode (expedited).**
 
-Step 12B is owned by Claude Sonnet.
+The senior developer authorised proceeding into implementation for a same-day
+**testing deployment**, using Step 12B Decisions 1–8 as its UI/brand/motion
+basis. This authorization is scoped to the testing milestone.
 
-Remaining gates, in order:
+The full formal gate ladder below still governs the main production build and
+is not being asserted as complete or bypassed beyond that scope:
 
-1. **Step 12B — UI / Brand / Motion Requirements Clarification** (current;
-   Claude Sonnet)
-2. Visual / motion specification
-3. Architecture design
-4. Implementation plan
-5. Human approval
-6. Only then: scaffolding
+1. ~~Step 12A — Domain Requirements Clarification~~ (complete)
+2. ~~Step 12B — UI / Brand / Motion Requirements Clarification~~ (complete)
+3. Visual / motion specification (not yet produced as a standalone spec
+   document — Step 12B's decision record serves as its basis for the testing
+   build)
+4. Architecture design
+5. Implementation plan
+6. Human approval
+7. Full production scaffolding
 
-Do NOT scaffold the application yet. Scaffolding is gate 6 and has not been
-reached.
+Scaffolding/implementation for the **testing milestone specifically** is
+authorised now, per this decision. Gates 3–7 above remain open for the main
+production build.
 
 ---
 
@@ -881,13 +901,15 @@ in §4c.
 
 ## Immediate Next Task
 
-**Step 12B — UI / Brand / Motion Requirements Clarification.**
-
-Owner: **Claude Sonnet**.
+**Testing-milestone implementation** (expedited), per Step 12B approval — see
+Current Project State above.
 
 Step 12A domain decisions U-1 through U-4 are complete and recorded in
-`docs/decisions/step-12a-domain-decisions.md`. The still-open non-domain items
-remain as recorded above and are not changed by the Step 12A decision record.
+`docs/decisions/step-12a-domain-decisions.md`. Step 12B UI/brand/motion
+Decisions 1–8 are complete and recorded in
+`docs/decisions/step-12b-ui-motion-decisions.md`. The still-open
+infrastructure/history items remain as recorded above and are not changed by
+either decision record.
 
 Do NOT:
 
