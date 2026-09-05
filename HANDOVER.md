@@ -101,12 +101,9 @@ can see them.
 
 ## Current Project State
 
-Planning stage only.
-
-No production application has been scaffolded yet.
-
-No implementation should begin until the remaining planning/review gates are
-completed.
+The expedited P0 testing milestone is implemented and deployed for human
+presentation review. This is not the completed production application: database,
+authentication, dashboard, and moderation implementation remain deferred.
 
 Completed:
 
@@ -132,6 +129,15 @@ Completed:
 - Official Sodales brand mark assets added
   (`docs/brand/assets/sodales-symbol.png`,
   `docs/brand/assets/sodales-wordmark-horizontal.png`).
+- Root pnpm/Turbo workspace, `apps/talents` Next.js 15 application, Tailwind v4,
+  and shared `packages/ui` foundation implemented.
+- Responsive P0 routes implemented: `/`, `/talents`, `/talents/[slug]`,
+  `/login`, and `/sign-up`.
+- Approved Step 12B first-load entrance, top-level route transitions, loading,
+  error, empty, 404, and reduced-motion behavior implemented for the testing
+  milestone.
+- Production build, lint, typecheck, exact-viewport responsive QA, local route
+  smoke tests, and protected Vercel preview smoke tests completed successfully.
 
 Revision 2 audit of record:
 
@@ -147,11 +153,11 @@ Step 12B decision record:
 
 Current phase:
 
-**Testing milestone — implementation mode (expedited).**
+**Testing milestone — P0 deployed and awaiting human presentation review.**
 
-The senior developer authorised proceeding into implementation for a same-day
-**testing deployment**, using Step 12B Decisions 1–8 as its UI/brand/motion
-basis. This authorization is scoped to the testing milestone.
+The senior developer authorised and Codex completed the same-day P0 testing
+implementation using Step 12B Decisions 1–8 as its UI/brand/motion basis. This
+authorization and deployment remain scoped to the testing milestone.
 
 The full formal gate ladder below still governs the main production build and
 is not being asserted as complete or bypassed beyond that scope:
@@ -169,6 +175,37 @@ is not being asserted as complete or bypassed beyond that scope:
 Scaffolding/implementation for the **testing milestone specifically** is
 authorised now, per this decision. Gates 3–7 above remain open for the main
 production build.
+
+### Expedited P0 testing deployment — 2026-09-05
+
+Deployment record: `docs/deployment/testing-milestone-2026-09-05.md`
+
+- Vercel project: `sodales-talents-p0-testing-20260905`
+- Deployment: `dpl_DWPQdfwtD8sxnHciBE6DJHjNGEYQ`
+- Preview:
+  `https://sodales-talents-p0-testing-20260905-jtixyr0mu.vercel.app`
+- Vercel state: `READY`
+- Access: protected by the team's Vercel Authentication policy; authorised
+  project members can open the preview, and authenticated CLI smoke testing
+  passed behind the gate.
+- Data source: **TESTING FIXTURE DATA** containing approved demo profiles only.
+  The stable `listApprovedTalents()` and `getApprovedTalentBySlug()` boundaries
+  are in place for a later SQL adapter. This is not a database implementation.
+- Public unknown profile slugs return the application 404.
+- Official supplied brand PNGs are copied byte-for-byte into the application
+  and used unchanged on controlled light asset surfaces.
+
+**TESTING-MILESTONE DEFERRALS:** Neon Postgres, Drizzle schema/migrations, real
+SQL queries, Neon Auth, persisted inquiry submission, talent dashboard/profile
+editing, admin moderation, domain state machines, audit records, and their
+automated integration tests. The login/sign-up and inquiry experiences are
+truthful non-persisting testing shells; they do not transmit credentials or
+claim success.
+
+Known visual limitation: the supplied official PNG marks have opaque white
+backgrounds and no transparent/reversed variants. Final dark-chrome treatment
+remains dependent on approved source assets; no replacement or recoloured logo
+was invented.
 
 ---
 
@@ -901,29 +938,17 @@ in §4c.
 
 ## Immediate Next Task
 
-**Testing-milestone implementation** (expedited), per Step 12B approval — see
-Current Project State above.
+**Human presentation review of the deployed expedited P0 testing milestone.**
 
-Step 12A domain decisions U-1 through U-4 are complete and recorded in
-`docs/decisions/step-12a-domain-decisions.md`. Step 12B UI/brand/motion
-Decisions 1–8 are complete and recorded in
-`docs/decisions/step-12b-ui-motion-decisions.md`. The still-open
-infrastructure/history items remain as recorded above and are not changed by
-either decision record.
+Use the protected preview and deployment record under Current Project State.
+Review the responsive public routes, approved brand treatment, first-load
+entrance, top-level transitions, reduced-motion alternative, fixture-backed
+search/filter behavior, profile inquiry shell, and auth shells.
 
-Do NOT:
+Do not treat this milestone as authority to begin the deferred Neon, auth,
+dashboard, moderation, or domain implementation. Those remain subject to the
+production gate ladder and still-open infrastructure decisions above. Do not
+make new product decisions without evidence.
 
-- scaffold Next.js
-- install application dependencies
-- create workspace files
-- initialize Neon
-- create schemas or migrations
-- create production code
-- begin architecture design or implementation planning
-- make new product decisions without evidence
-
-Scaffolding remains gate 6. Gates 2–5 (visual/motion specification,
-architecture design, implementation plan, human approval) have not started.
-
-When a gate completes, update this file. Do not rely on any agent's
-conversation history.
+When human review completes or production implementation is authorised, update
+this file. Do not rely on any agent's conversation history.

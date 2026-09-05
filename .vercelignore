@@ -1,0 +1,8 @@
+docs
+references
+scripts
+AGENTS.md
+CLAUDE.md
+HANDOVER.md
+.env.example
+*.tsbuildinfo

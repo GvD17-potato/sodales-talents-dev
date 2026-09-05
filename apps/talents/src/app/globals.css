@@ -1,0 +1,108 @@
+@import "tailwindcss";
+@source "../../../../packages/ui/src";
+@import "@sodales/ui/styles.css";
+
+@keyframes entrance-field {
+  0%,
+  68% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes entrance-symbol {
+  0% {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  18%,
+  58% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(5.5);
+  }
+}
+
+.brand-entrance {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: grid;
+  cursor: pointer;
+  place-items: center;
+  border: 0;
+  background: var(--sodales-obsidian);
+  animation: entrance-field 1.32s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+.brand-entrance__asset,
+.route-transition__asset {
+  display: grid;
+  place-items: center;
+  width: 112px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.brand-entrance__asset {
+  animation: entrance-symbol 1.32s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+.brand-entrance__asset img,
+.route-transition__asset img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.brand-entrance--reduced {
+  animation: entrance-field 0.36s ease-out forwards;
+}
+
+.brand-entrance--reduced .brand-entrance__asset {
+  animation: none;
+}
+
+.route-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  pointer-events: none;
+  place-items: center;
+  background: var(--sodales-obsidian);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease, visibility 0s linear 0.18s;
+}
+
+.route-transition--active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.18s ease;
+}
+
+.route-transition__asset {
+  width: 76px;
+}
+
+@media (min-width: 768px) {
+  .brand-entrance__asset {
+    width: 136px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-transition,
+  .route-transition--active {
+    display: none;
+    transition: none;
+  }
+}

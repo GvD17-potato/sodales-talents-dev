@@ -1,0 +1,75 @@
+:root {
+  --sodales-obsidian: #111111;
+  --sodales-ivory: #f4f2ed;
+  --sodales-graphite: #35373b;
+  --sodales-violet: #5e4fb3;
+  --sodales-violet-accessible: #887bd8;
+  --sodales-violet-soft: #dad4f5;
+  --sodales-violet-mid: #8072d2;
+  --sodales-violet-deep: #2a2440;
+  --background: var(--sodales-ivory);
+  --foreground: var(--sodales-obsidian);
+  --muted: #6b6b6b;
+  --border: color-mix(in srgb, var(--sodales-graphite) 24%, transparent);
+  --primary: var(--sodales-violet);
+  --primary-foreground: var(--sodales-ivory);
+  --ring: var(--sodales-violet);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-obsidian: var(--sodales-obsidian);
+  --color-ivory: var(--sodales-ivory);
+  --color-graphite: var(--sodales-graphite);
+  --color-violet: var(--sodales-violet);
+  --color-violet-accessible: var(--sodales-violet-accessible);
+  --color-violet-soft: var(--sodales-violet-soft);
+  --color-violet-mid: var(--sodales-violet-mid);
+  --color-violet-deep: var(--sodales-violet-deep);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-manrope);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  background: var(--background);
+  color: var(--foreground);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: var(--sodales-violet-soft);
+  color: var(--sodales-obsidian);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}

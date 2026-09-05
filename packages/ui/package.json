@@ -1,0 +1,20 @@
+{
+  "name": "@sodales/ui",
+  "version": "0.1.0",
+  "private": true,
+  "sideEffects": ["**/*.css"],
+  "exports": {
+    "./button": "./src/components/button.tsx",
+    "./styles.css": "./src/globals.css"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "typescript": "^5"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  }
+}

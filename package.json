@@ -1,0 +1,18 @@
+{
+  "name": "sodales-talents-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.15.1",
+  "scripts": {
+    "dev": "turbo dev --filter=@sodales/talents",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck"
+  },
+  "devDependencies": {
+    "next": "15.5.25",
+    "playwright-core": "^1.55.0",
+    "turbo": "^2.5.6",
+    "typescript": "^5"
+  }
+}
