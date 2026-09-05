@@ -2,9 +2,15 @@
 @source "../../../../packages/ui/src";
 @import "@sodales/ui/styles.css";
 
-@keyframes entrance-field {
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+@keyframes entrance-standard-field {
   0%,
-  68% {
+  76% {
     opacity: 1;
   }
   100% {
@@ -13,19 +19,34 @@
   }
 }
 
-@keyframes entrance-symbol {
+@keyframes entrance-standard-symbol {
   0% {
     opacity: 0;
-    transform: scale(0.94);
+    transform: scale(0.84);
   }
-  18%,
-  58% {
+  16%,
+  54% {
     opacity: 1;
     transform: scale(1);
   }
+  88% {
+    opacity: 1;
+    transform: scale(3);
+  }
   100% {
     opacity: 0;
-    transform: scale(5.5);
+    transform: scale(3.4);
+  }
+}
+
+@keyframes entrance-reduced-field {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
   }
 }
 
@@ -33,12 +54,27 @@
   position: fixed;
   inset: 0;
   z-index: 110;
-  display: grid;
+  display: none;
+  visibility: hidden;
+  pointer-events: none;
   cursor: pointer;
   place-items: center;
   border: 0;
   background: var(--sodales-obsidian);
-  animation: entrance-field 1.32s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+:root[data-sodales-entrance="pending"],
+:root[data-sodales-entrance="standard"],
+:root[data-sodales-entrance="reduced"] {
+  background: var(--sodales-obsidian);
+}
+
+:root[data-sodales-entrance="pending"] .brand-entrance,
+:root[data-sodales-entrance="standard"] .brand-entrance,
+:root[data-sodales-entrance="reduced"] .brand-entrance {
+  display: grid;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .brand-entrance__asset,
@@ -52,7 +88,19 @@
 }
 
 .brand-entrance__asset {
-  animation: entrance-symbol 1.32s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  transform: none;
+}
+
+:root[data-sodales-entrance="standard"] .brand-entrance {
+  animation: entrance-standard-field 1.55s cubic-bezier(0.76, 0, 0.24, 1)
+    forwards;
+  will-change: opacity;
+}
+
+:root[data-sodales-entrance="standard"] .brand-entrance__asset {
+  animation: entrance-standard-symbol 1.55s cubic-bezier(0.76, 0, 0.24, 1)
+    forwards;
+  will-change: opacity, transform;
 }
 
 .brand-entrance__asset img,
@@ -62,12 +110,15 @@
   height: auto;
 }
 
-.brand-entrance--reduced {
-  animation: entrance-field 0.36s ease-out forwards;
+:root[data-sodales-entrance="reduced"] .brand-entrance {
+  animation: entrance-reduced-field 0.36s ease-out forwards;
+  will-change: opacity;
 }
 
-.brand-entrance--reduced .brand-entrance__asset {
+:root[data-sodales-entrance="reduced"] .brand-entrance__asset {
   animation: none;
+  opacity: 1;
+  transform: none;
 }
 
 .route-transition {

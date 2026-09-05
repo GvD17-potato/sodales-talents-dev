@@ -13,8 +13,8 @@ import {
   useState,
 } from "react";
 
-const SESSION_STARTED_KEY = "sodales-talents-session-started";
 const TOP_LEVEL_ROUTES = new Set(["/", "/talents", "/login", "/sign-up"]);
+type EntranceMode = "standard" | "reduced";
 
 type NavigationContextValue = {
   navigate: (href: string) => void;
@@ -26,11 +26,20 @@ const NavigationContext = createContext<NavigationContextValue | null>(null);
 export function TransitionShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const initialized = useRef(false);
   const navigationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [entranceActive, setEntranceActive] = useState(false);
+  const [entranceMounted, setEntranceMounted] = useState(true);
+  const [entranceMode, setEntranceMode] = useState<EntranceMode | null>(null);
   const [routeActive, setRouteActive] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+
+  const completeEntrance = useCallback(() => {
+    document.documentElement.setAttribute(
+      "data-sodales-entrance",
+      "complete",
+    );
+    setEntranceMounted(false);
+    setEntranceMode(null);
+  }, []);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -41,35 +50,34 @@ export function TransitionShell({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (initialized.current) return;
-    initialized.current = true;
+    const mode = document.documentElement.getAttribute(
+      "data-sodales-entrance",
+    );
+    if (mode === "standard" || mode === "reduced") {
+      setEntranceMode(mode);
+      return;
+    }
 
-    const sessionStarted = window.sessionStorage.getItem(SESSION_STARTED_KEY);
-    if (sessionStarted) return;
-
-    window.sessionStorage.setItem(SESSION_STARTED_KEY, "true");
-    if (pathname !== "/") return;
-
-    setEntranceActive(true);
-  }, [pathname]);
+    setEntranceMounted(false);
+  }, []);
 
   useEffect(() => {
-    if (!entranceActive) return;
+    if (!entranceMode) return;
     const timeout = window.setTimeout(
-      () => setEntranceActive(false),
-      reducedMotion ? 360 : 1320,
+      completeEntrance,
+      entranceMode === "reduced" ? 700 : 1900,
     );
     return () => window.clearTimeout(timeout);
-  }, [entranceActive, reducedMotion]);
+  }, [completeEntrance, entranceMode]);
 
   useEffect(() => {
-    if (!entranceActive) return;
+    if (!entranceMode) return;
     const dismiss = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setEntranceActive(false);
+      if (event.key === "Escape") completeEntrance();
     };
     window.addEventListener("keydown", dismiss);
     return () => window.removeEventListener("keydown", dismiss);
-  }, [entranceActive]);
+  }, [completeEntrance, entranceMode]);
 
   useEffect(() => {
     if (!routeActive) return;
@@ -105,14 +113,15 @@ export function TransitionShell({ children }: { children: ReactNode }) {
 
   return (
     <NavigationContext.Provider value={{ navigate, reducedMotion }}>
-      {children}
-
-      {entranceActive ? (
+      {entranceMounted ? (
         <button
           type="button"
           aria-label="Dismiss introduction"
-          onClick={() => setEntranceActive(false)}
-          className={`brand-entrance ${reducedMotion ? "brand-entrance--reduced" : ""}`}
+          onAnimationEnd={(event) => {
+            if (event.currentTarget === event.target) completeEntrance();
+          }}
+          onClick={completeEntrance}
+          className="brand-entrance"
         >
           <span className="brand-entrance__asset" aria-hidden="true">
             <Image
@@ -125,6 +134,8 @@ export function TransitionShell({ children }: { children: ReactNode }) {
           </span>
         </button>
       ) : null}
+
+      {children}
 
       <div
         aria-hidden="true"

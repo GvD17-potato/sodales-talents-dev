@@ -56,9 +56,8 @@ export default async function HomePage() {
           </div>
 
           <div className="relative min-h-[360px] overflow-hidden bg-violet-deep sm:min-h-[480px] min-[1100px]:min-h-[640px]">
-            <div className="absolute inset-x-0 top-0 flex items-center justify-between border-b border-white/20 px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-ivory/70">
+            <div className="absolute inset-x-0 top-0 flex items-center border-b border-white/20 px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-ivory/70">
               <span>Creative intelligence</span>
-              <span>01 / 01</span>
             </div>
             <div className="absolute inset-0 grid place-items-center px-10 pt-12">
               <div className="grid aspect-square w-[46%] max-w-[230px] place-items-center bg-white p-4 sm:p-6">

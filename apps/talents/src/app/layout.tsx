@@ -6,6 +6,30 @@ import { SiteHeader } from "@/components/site-header";
 import { TransitionShell } from "@/components/transition-shell";
 import "./globals.css";
 
+const entranceBootstrap = `(() => {
+  const root = document.documentElement;
+  let mode = "skip";
+
+  try {
+    const sessionKey = "sodales-talents-session-started";
+    const isFirstPageview = !window.sessionStorage.getItem(sessionKey);
+
+    if (isFirstPageview) {
+      window.sessionStorage.setItem(sessionKey, "true");
+
+      if (window.location.pathname === "/") {
+        mode = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "reduced"
+          : "standard";
+      }
+    }
+  } catch {
+    // If storage is unavailable, skip rather than risk replaying the entrance.
+  }
+
+  root.setAttribute("data-sodales-entrance", mode);
+})();`;
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -30,7 +54,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-sodales-entrance="pending" suppressHydrationWarning>
+      <head>
+        <script
+          id="sodales-entrance-bootstrap"
+          dangerouslySetInnerHTML={{ __html: entranceBootstrap }}
+        />
+      </head>
       <body className={`${inter.variable} ${manrope.variable} overflow-x-hidden antialiased`}>
         <TransitionShell>
           <a
