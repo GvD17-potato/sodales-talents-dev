@@ -3,7 +3,13 @@ export type TalentCategory = {
   slug: string;
   name: string;
   description: string;
+  approvedTalentCount: number;
 };
+
+export type PublicTalentCategory = Omit<
+  TalentCategory,
+  "approvedTalentCount"
+>;
 
 export type PortfolioLink = {
   label: string;
@@ -17,15 +23,14 @@ export type PublicTalent = {
   headline: string;
   bio: string;
   location: string;
-  category: TalentCategory;
+  category: PublicTalentCategory;
   skills: string[];
   portfolioLinks: PortfolioLink[];
   memberSince: string;
-  status: "approved";
-  featured: boolean;
 };
 
 export type TalentFilters = {
   q?: string;
   category?: string;
+  limit?: number;
 };

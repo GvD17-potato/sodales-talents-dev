@@ -12,17 +12,14 @@ import {
   listTalentCategories,
 } from "@/features/talents/queries";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [categories, talents, counts] = await Promise.all([
     listTalentCategories(),
-    listApprovedTalents(),
+    listApprovedTalents({ limit: 4 }),
     getPublicProofCounts(),
   ]);
-
-  const categoriesWithCounts = categories.map((category) => ({
-    ...category,
-    count: talents.filter((talent) => talent.category.slug === category.slug).length,
-  }));
 
   const popularSearches = categories.slice(0, 3);
 
@@ -146,7 +143,7 @@ export default async function HomePage() {
             </p>
           </div>
           <ol className="border-b border-graphite/40">
-            {categoriesWithCounts.map((category, index) => (
+            {categories.map((category, index) => (
               <li key={category.id}>
                 <Link
                   href={`/talents?category=${category.slug}`}
@@ -164,7 +161,7 @@ export default async function HomePage() {
                     </span>
                   </span>
                   <span className="hidden text-xs text-graphite/60 sm:block">
-                    {category.count} talent{category.count === 1 ? "" : "s"}
+                    {category.approvedTalentCount} talent{category.approvedTalentCount === 1 ? "" : "s"}
                   </span>
                   <ArrowUpRight aria-hidden="true" className="text-graphite group-hover:text-violet" size={22} />
                 </Link>
@@ -193,11 +190,22 @@ export default async function HomePage() {
               </TransitionLink>
             </Button>
           </div>
-          <div className="grid gap-x-10 sm:grid-cols-2">
-            {talents.slice(0, 4).map((talent, index) => (
-              <TalentProfileRow key={talent.id} talent={talent} index={index} />
-            ))}
-          </div>
+          {talents.length ? (
+            <div className="grid gap-x-10 sm:grid-cols-2">
+              {talents.map((talent, index) => (
+                <TalentProfileRow key={talent.id} talent={talent} index={index} />
+              ))}
+            </div>
+          ) : (
+            <div className="border-y border-graphite/40 py-12 text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet">
+                The collective is being curated
+              </p>
+              <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-graphite/70">
+                Approved talent profiles will appear here as they join the directory.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

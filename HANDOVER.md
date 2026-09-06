@@ -153,15 +153,19 @@ Step 12B decision record:
 
 Current phase:
 
-**Backend Phase 2 — Neon Auth and account provisioning ✅ COMPLETE.**
+**Backend Phase 3 — Real Public Talent Queries ✅ COMPLETE.**
 
-Current implementation phase: **Backend Phase 3 — Real Public Talent
-Queries**. Do not start it without the next explicit implementation task.
+Current implementation phase: **Backend Phase 4 — Talent Dashboard and
+Profile Lifecycle**. Do not start it without the next explicit implementation
+task.
 
 Backend Phase 1 is source-complete and verified against the real Neon
 development database: the existing migration, six-category seed, connectivity,
 exactly seven application tables, and four enums are confirmed. The approved
-P0 public frontend remains fixture-backed.
+P0 public frontend now uses server-only, approved-only SQL queries for its
+homepage, directory, search, category filters/counts and profile detail. The
+fixture runtime has been removed; pages render honest empty states when no
+approved profile exists.
 
 Phase 2 contains the Neon Auth handler/middleware, real sign-up, sign-in and
 sign-out actions, server-side session/role guards, idempotent talent role plus
@@ -173,6 +177,14 @@ from `/admin`, logout, signed-out protection, idempotent provisioning, and test
 user cleanup passed. `ADMIN_EMAIL` and `ADMIN_PASSWORD` are not locally
 configured, so the controlled first-admin command remains awaiting operator
 credentials. See `docs/decisions/backend-phase-2-neon-auth.md`.
+
+Phase 3 preserves the approved Astra presentation while applying an explicit
+public projection, batched deterministic skill/link loading, dynamic request
+rendering and a true HTTP 404 boundary for non-approved or missing profile
+slugs. Real development-Neon query and browser verification passed with
+temporary rows that were removed afterward. No schema or migration change was
+needed, and the durable seed remains categories-only. See
+`docs/decisions/backend-phase-3-public-queries.md`.
 
 The current Phase 1 seed remains categories-only. Rich demo talent/auth,
 inquiry, and moderation seed content remains deferred and has not been created.
@@ -965,10 +977,10 @@ in §4c.
 
 ## Immediate Next Task
 
-**Backend Phase 3 — Real Public Talent Queries.**
+**Backend Phase 4 — Talent Dashboard and Profile Lifecycle.**
 
-Replace the approved public talent fixtures with SQL-backed queries that expose
-only approved profiles, following the SDD and Neon setup contract. Do not begin
-without an explicit Phase 3 implementation task. The controlled first-admin
-bootstrap remains an operator action awaiting locally configured
-`ADMIN_EMAIL` and `ADMIN_PASSWORD`.
+Implement talent-owned profile editing and the approved profile lifecycle
+rules against the real application database. Do not begin without an explicit
+Phase 4 implementation task. The controlled first-admin bootstrap remains an
+operator action awaiting locally configured `ADMIN_EMAIL` and
+`ADMIN_PASSWORD`.

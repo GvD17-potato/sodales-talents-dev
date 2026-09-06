@@ -15,6 +15,7 @@
     "lint": "eslint .",
     "test:auth": "tsx --test src/features/auth/auth.test.ts",
     "test:domain": "tsx --test src/domain/domain.test.ts",
+    "test:public-queries": "node --conditions=react-server --import tsx --test --test-force-exit src/features/talents/public-queries.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -14,22 +14,27 @@ export const metadata: Metadata = {
     "Browse approved independent creative talent across design, development, photography, writing, video, and music.",
 };
 
+export const dynamic = "force-dynamic";
+
 type DirectoryPageProps = {
   searchParams: Promise<{ q?: string; category?: string }>;
 };
 
 export default async function TalentsPage({ searchParams }: DirectoryPageProps) {
   const requested = await searchParams;
-  const categories = await listTalentCategories();
-  const selectedCategory = categories.find(
-    (category) => category.slug === requested.category,
-  );
+  const requestedCategory = requested.category?.trim().toLocaleLowerCase();
   const query = requested.q?.trim() ?? "";
-  const talents = await listApprovedTalents({
-    q: query,
-    category: selectedCategory?.slug,
-  });
-  const allTalents = await listApprovedTalents();
+  const [categories, talents] = await Promise.all([
+    listTalentCategories(),
+    listApprovedTalents({ q: query, category: requestedCategory }),
+  ]);
+  const selectedCategory = categories.find(
+    (category) => category.slug === requestedCategory,
+  );
+  const allTalentCount = categories.reduce(
+    (total, category) => total + category.approvedTalentCount,
+    0,
+  );
 
   return (
     <main id="main-content" className="min-h-[70vh]">
@@ -60,13 +65,12 @@ export default async function TalentsPage({ searchParams }: DirectoryPageProps) 
               className="flex shrink-0 items-center justify-between gap-4 border-b border-graphite/25 py-3 text-sm text-graphite transition-colors hover:text-violet aria-[current=page]:border-violet aria-[current=page]:font-semibold aria-[current=page]:text-violet motion-reduce:transition-none lg:w-full"
             >
               All
-              <span className="text-xs text-graphite/60">{allTalents.length}</span>
+              <span className="text-xs text-graphite/60">{allTalentCount}</span>
             </Link>
             {categories.map((category) => {
               const params = new URLSearchParams();
               if (query) params.set("q", query);
               params.set("category", category.slug);
-              const count = allTalents.filter((talent) => talent.category.slug === category.slug).length;
               return (
                 <Link
                   key={category.id}
@@ -75,7 +79,7 @@ export default async function TalentsPage({ searchParams }: DirectoryPageProps) 
                   className="flex shrink-0 items-center justify-between gap-4 border-b border-graphite/25 py-3 text-sm text-graphite transition-colors hover:text-violet aria-[current=page]:border-violet aria-[current=page]:font-semibold aria-[current=page]:text-violet motion-reduce:transition-none lg:w-full"
                 >
                   {category.name}
-                  <span className="text-xs text-graphite/60">{count}</span>
+                  <span className="text-xs text-graphite/60">{category.approvedTalentCount}</span>
                 </Link>
               );
             })}

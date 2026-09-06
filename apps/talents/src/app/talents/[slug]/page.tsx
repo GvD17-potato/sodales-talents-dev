@@ -6,24 +6,18 @@ import { InquiryDialog } from "@/components/inquiry-dialog";
 import { WRAP } from "@/lib/layout";
 import {
   getApprovedTalentBySlug,
-  listApprovedTalents,
 } from "@/features/talents/queries";
 
 type TalentProfilePageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export const dynamicParams = false;
-
-export async function generateStaticParams() {
-  const talents = await listApprovedTalents();
-  return talents.map((talent) => ({ slug: talent.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: TalentProfilePageProps): Promise<Metadata> {
   const { slug } = await params;
   const talent = await getApprovedTalentBySlug(slug);
-  if (!talent) return { title: "Profile not found" };
+  if (!talent) notFound();
 
   return {
     title: `${talent.displayName} — ${talent.headline}`,
