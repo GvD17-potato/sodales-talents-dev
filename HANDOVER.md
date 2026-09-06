@@ -153,11 +153,10 @@ Step 12B decision record:
 
 Current phase:
 
-**Backend Phase 3 — Real Public Talent Queries ✅ COMPLETE.**
+**Backend Phase 4 — Talent Dashboard and Profile Lifecycle ✅ COMPLETE.**
 
-Current implementation phase: **Backend Phase 4 — Talent Dashboard and
-Profile Lifecycle**. Do not start it without the next explicit implementation
-task.
+Current implementation phase: **Backend Phase 5 — Admin Moderation and Inquiry
+Operations**. Do not start it without the next explicit implementation task.
 
 Backend Phase 1 is source-complete and verified against the real Neon
 development database: the existing migration, six-category seed, connectivity,
@@ -185,6 +184,16 @@ slugs. Real development-Neon query and browser verification passed with
 temporary rows that were removed afterward. No schema or migration change was
 needed, and the durable seed remains categories-only. See
 `docs/decisions/backend-phase-3-public-queries.md`.
+
+Phase 4 provides the real owner-scoped talent dashboard and profile editor,
+separate draft-save and persisted publication-completeness gates, explicit
+submit/resubmit actions, transactional current-row lifecycle decisions,
+normalized materiality, ordered skill/link persistence, concurrency protection,
+and immediate SQL-level public removal after approved material edits. The
+existing seven-table schema and migration remain unchanged. Automated and real
+browser verification passed against Neon development, and all temporary
+application/Auth data was removed. See
+`docs/decisions/backend-phase-4-talent-dashboard-lifecycle.md`.
 
 The current Phase 1 seed remains categories-only. Rich demo talent/auth,
 inquiry, and moderation seed content remains deferred and has not been created.
@@ -977,10 +986,10 @@ in §4c.
 
 ## Immediate Next Task
 
-**Backend Phase 4 — Talent Dashboard and Profile Lifecycle.**
+**Backend Phase 5 — Admin Moderation and Inquiry Operations.**
 
-Implement talent-owned profile editing and the approved profile lifecycle
-rules against the real application database. Do not begin without an explicit
-Phase 4 implementation task. The controlled first-admin bootstrap remains an
-operator action awaiting locally configured `ADMIN_EMAIL` and
+Implement admin moderation, moderation audit records, and persisted inquiry
+operations against the real application database. Do not begin without an
+explicit Phase 5 implementation task. The controlled first-admin bootstrap
+remains an operator action awaiting locally configured `ADMIN_EMAIL` and
 `ADMIN_PASSWORD`.

@@ -16,8 +16,25 @@ const navigation = [
 export function SiteHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const isDashboard = pathname.startsWith("/dashboard");
 
   useEffect(() => setMenuOpen(false), [pathname]);
+
+  if (isDashboard) {
+    return (
+      <header className="border-b border-border bg-ivory">
+        <div className={`flex min-h-[72px] items-center justify-between gap-6 sm:min-h-20 ${WRAP}`}>
+          <TransitionLink href="/dashboard" aria-label="Sodales Talents private workspace">
+            <BrandWordmark compact />
+          </TransitionLink>
+          <div className="flex items-center gap-5">
+            <span className="hidden text-xs font-semibold uppercase tracking-[0.18em] text-violet sm:inline">Private workspace</span>
+            <TransitionLink href="/talents" className="text-sm text-graphite transition-colors hover:text-violet motion-reduce:transition-none">View directory</TransitionLink>
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-ivory/95 backdrop-blur-[18px]">

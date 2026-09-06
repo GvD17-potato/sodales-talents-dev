@@ -258,6 +258,18 @@ test("admin is allowed on admin routes", () => {
   );
 });
 
+test("admin is denied on talent-owned profile routes and actions", () => {
+  assert.equal(
+    authorizeApplicationUser({
+      authenticated: true,
+      role: "admin",
+      hasTalentProfile: false,
+      allowedRoles: ["talent"],
+    }),
+    "forbidden",
+  );
+});
+
 test("Neon middleware leaves anonymous Auth API endpoints unprotected", () => {
   assert.equal(
     shouldProtectRoute(
