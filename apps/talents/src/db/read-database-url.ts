@@ -1,9 +1,9 @@
 import { existsSync, readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 
 const localEnvironmentFiles = [
-  fileURLToPath(new URL("../../.env.local", import.meta.url)),
-  fileURLToPath(new URL("../../../../.env.local", import.meta.url)),
+  resolve(process.cwd(), ".env.local"),
+  resolve(process.cwd(), "apps/talents/.env.local"),
 ];
 
 function unquote(value: string) {

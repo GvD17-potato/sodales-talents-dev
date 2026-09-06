@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "auth:bootstrap-admin": "tsx src/db/bootstrap-admin.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx src/db/seed.ts",
@@ -12,10 +13,12 @@
     "db:studio": "drizzle-kit studio",
     "start": "next start",
     "lint": "eslint .",
+    "test:auth": "tsx --test src/features/auth/auth.test.ts",
     "test:domain": "tsx --test src/domain/domain.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@neondatabase/auth": "0.5.0-beta",
     "@radix-ui/react-dialog": "^1.1.15",
     "@sodales/ui": "workspace:*",
     "drizzle-orm": "^0.45.2",

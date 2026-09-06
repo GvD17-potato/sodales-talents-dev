@@ -153,22 +153,29 @@ Step 12B decision record:
 
 Current phase:
 
-**Backend Phase 1 — Source checkpoint approved; remote Neon integration pending
-credentials.**
+**Backend Phase 2 — Neon Auth and account provisioning ✅ COMPLETE.**
 
-The approved P0 frontend remains deployed and fixture-backed. Phase 1 is an
-additive source foundation containing the Neon/Postgres connection
-foundation, seven-table Drizzle schema and initial migration, category seed,
-database smoke script, publication/domain primitives, and focused tests. No
-remote migration has been applied because `DATABASE_URL` is not configured.
-Neon Auth, persisted actions, dashboards/admin, and SQL-backed public reads
-remain deferred.
+Current implementation phase: **Backend Phase 3 — Real Public Talent
+Queries**. Do not start it without the next explicit implementation task.
 
-**SOURCE CHECKPOINT READY; REMOTE NEON INTEGRATION PENDING CREDENTIALS.** The
-current Phase 1 seed contains the six categories only. Final SDD seed acceptance
-remains deferred to the Auth/integration phase and must still add the
-first-admin bootstrap, six demo talent auth users/profiles, four inquiries, and
-the specified historical moderation demo data.
+Backend Phase 1 is source-complete and verified against the real Neon
+development database: the existing migration, six-category seed, connectivity,
+exactly seven application tables, and four enums are confirmed. The approved
+P0 public frontend remains fixture-backed.
+
+Phase 2 contains the Neon Auth handler/middleware, real sign-up, sign-in and
+sign-out actions, server-side session/role guards, idempotent talent role plus
+draft-profile reconciliation, controlled first-admin bootstrap, minimal
+protected route shells, and focused Auth tests. Managed Neon Auth is enabled
+and verified on the existing `Sodales-Talent` `development` branch. Real app
+sign-up and login redirect to `/dashboard`; session enforcement, talent denial
+from `/admin`, logout, signed-out protection, idempotent provisioning, and test
+user cleanup passed. `ADMIN_EMAIL` and `ADMIN_PASSWORD` are not locally
+configured, so the controlled first-admin command remains awaiting operator
+credentials. See `docs/decisions/backend-phase-2-neon-auth.md`.
+
+The current Phase 1 seed remains categories-only. Rich demo talent/auth,
+inquiry, and moderation seed content remains deferred and has not been created.
 
 The senior developer authorised and Codex completed the same-day P0 testing
 implementation using Step 12B Decisions 1–8 as its UI/brand/motion basis. This
@@ -958,11 +965,10 @@ in §4c.
 
 ## Immediate Next Task
 
-**Configure Neon development credentials and verify Backend Phase 1 remotely.**
+**Backend Phase 3 — Real Public Talent Queries.**
 
-Verify the approved Phase 1 migration, categories-only seed, and database smoke
-script against the actual Neon development database. Do not push, deploy, or
-begin Phase 2 as part of that verification.
-
-After approval, the next implementation phase is **Phase 2 — Neon Auth +
-Signup Provisioning**. Do not rely on any agent's conversation history.
+Replace the approved public talent fixtures with SQL-backed queries that expose
+only approved profiles, following the SDD and Neon setup contract. Do not begin
+without an explicit Phase 3 implementation task. The controlled first-admin
+bootstrap remains an operator action awaiting locally configured
+`ADMIN_EMAIL` and `ADMIN_PASSWORD`.

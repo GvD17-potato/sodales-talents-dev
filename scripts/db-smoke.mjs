@@ -87,8 +87,17 @@ try {
   const missingTables = expectedTables.filter(
     (table) => !availableTables.has(table),
   );
+  const unexpectedTables = [...availableTables].filter(
+    (table) => !expectedTables.includes(table),
+  );
   if (missingTables.length > 0) {
     console.error(`Database smoke failed: missing tables ${missingTables.join(", ")}.`);
+    process.exitCode = 1;
+  }
+  if (unexpectedTables.length > 0) {
+    console.error(
+      `Database smoke failed: unexpected application tables ${unexpectedTables.join(", ")}.`,
+    );
     process.exitCode = 1;
   }
 

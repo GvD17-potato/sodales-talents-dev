@@ -1,14 +1,24 @@
 import type { Metadata } from "next";
-import { AuthPreviewForm } from "@/components/auth-preview-form";
+import { redirect } from "next/navigation";
+import { AuthForm } from "@/components/auth-form";
 import { TransitionLink } from "@/components/transition-shell";
+import { destinationForRole } from "@/domain";
+import { getCurrentUser } from "@/lib/auth/session";
 import { WRAP } from "@/lib/layout";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Join as a talent",
   robots: { index: false },
 };
 
-export default function SignUpPage() {
+export default async function SignUpPage() {
+  const currentUser = await getCurrentUser();
+  if (currentUser?.role && (currentUser.role === "admin" || currentUser.profileId)) {
+    redirect(destinationForRole(currentUser.role));
+  }
+
   return (
     <main id="main-content" className="min-h-[72vh] border-b border-border">
       <div className={`grid lg:grid-cols-2 ${WRAP}`}>
@@ -34,7 +44,7 @@ export default function SignUpPage() {
             Join as a talent.
           </h2>
           <p className="mt-3 text-[15px] text-graphite">Create your space in the collective.</p>
-          <AuthPreviewForm mode="sign-up" />
+          <AuthForm mode="sign-up" />
           <p className="mt-7 text-sm text-graphite/70">
             Already part of the collective?{" "}
             <TransitionLink href="/login" className="text-violet underline">

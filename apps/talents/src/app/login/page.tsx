@@ -1,14 +1,29 @@
 import type { Metadata } from "next";
-import { AuthPreviewForm } from "@/components/auth-preview-form";
+import { redirect } from "next/navigation";
+import { AuthForm } from "@/components/auth-form";
 import { TransitionLink } from "@/components/transition-shell";
+import { destinationForRole } from "@/domain";
+import { getCurrentUser } from "@/lib/auth/session";
 import { WRAP } from "@/lib/layout";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Sign in",
   robots: { index: false },
 };
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const currentUser = await getCurrentUser();
+  if (currentUser?.role && (currentUser.role === "admin" || currentUser.profileId)) {
+    redirect(destinationForRole(currentUser.role));
+  }
+  const accountSetupError = (await searchParams).error === "account-setup";
+
   return (
     <main id="main-content" className="min-h-[72vh] border-b border-border">
       <div className={`grid lg:grid-cols-2 ${WRAP}`}>
@@ -33,7 +48,13 @@ export default function LoginPage() {
             Welcome back.
           </h2>
           <p className="mt-3 text-[15px] text-graphite">Step into your creative workspace.</p>
-          <AuthPreviewForm mode="login" />
+          {accountSetupError ? (
+            <p role="alert" className="mt-6 border border-red-700/30 bg-red-50 p-4 text-sm leading-6 text-red-900">
+              Your session is valid, but the application account is incomplete.
+              Sign in again to retry account setup.
+            </p>
+          ) : null}
+          <AuthForm mode="login" />
           <p className="mt-7 text-sm text-graphite/70">
             New to Sodales?{" "}
             <TransitionLink href="/sign-up" className="text-violet underline">
